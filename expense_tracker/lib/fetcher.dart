@@ -1,69 +1,189 @@
-import 'package:expense_tracker/expense.dto.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as path;
+import 'dart:async';
+import 'dart:convert';
+import 'package:expense_tracker/user_dto.dart';
+import 'package:expense_tracker/utils.dart';
+import 'package:http/http.dart' as http;
 
-class ExpenseDatabase {
-  static final ExpenseDatabase _instance = ExpenseDatabase._internal();
+class Fetcher {
+  Future<User> signUpUser({
+    required String username,
+    required String password,
+  }) async {
+    print("================ ${username} ${password}");
+    try {
+      http.Response response = await http.post(
+        Uri.parse("$uri/auth/signup"),
+        body: jsonEncode(
+          {
+            'username': username,
+            'password': password,
+          },
+        ),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+      );
 
-  factory ExpenseDatabase() {
-    return _instance;
-  }
-
-  static Database? _database;
-
-  Future<Database> get database async {
-    if (_database != null) {
-      return _database!;
+      if (response.statusCode == 200) {
+        User user = User.fromJson(jsonDecode(response.body));
+        User.save(user);
+        return user;
+      } else {
+        return User.empty;
+      }
+    } catch (e) {
+      throw Exception("Something went wrong");
     }
-
-    _database = await _initDatabase();
-    return _database!;
   }
 
-  ExpenseDatabase._internal();
+  Future<User> signInUser({
+    required String username,
+    required String password,
+  }) async {
+    try {
+      http.Response res = await http.post(
+        Uri.parse('$uri/auth/signin'),
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+        }),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+      );
 
-  Future<Database> _initDatabase() async {
-    final dbPath = await getDatabasesPath();
-    final pathToDb = path.join(dbPath, 'expense_database.db');
-
-    return await openDatabase(
-      pathToDb,
-      version: 1,
-      onCreate: (db, version) async {
-        await db.execute('CREATE TABLE expenses ('
-            'id INTEGER PRIMARY KEY, '
-            'category TEXT, '
-            'date TEXT, '
-            'amount REAL'
-            ')');
-      },
-    );
+      if (res.statusCode == 200) {
+        User user = User.fromJson(jsonDecode(res.body));
+        User.save(user);
+        return user;
+      } else {
+        throw Exception(jsonDecode(res.body)['error']);
+      }
+    } catch (e) {
+      throw Exception('$e');
+    }
   }
 
-  Future<List<ExpenseDto>> getExpenses() async {
-    final db = await database;
-    final result = await db.query('expenses');
+//   Future<bool> forgetPassword(
+//       phoenNumber, question, answer, newPassword) async {
+//     try {
+//       http.Response res = await http.put(
+//         Uri.parse('$uri/auth/forgetpassword'),
+//         body: jsonEncode({
+//           'phoneNumber': phoenNumber,
+//           'question': question,
+//           'answer': answer,
+//           'newPassword': newPassword,
+//           'reqUrl': "forget"
+//         }),
+//         headers: <String, String>{
+//           'Content-Type': 'application/json; charset=UTF-8'
+//         },
+//       );
 
-    return ExpenseDto.fromList(result);
-  }
+//       if (res.statusCode == 200) {
+//         return true;
+//       } else {
+//         throw Exception(jsonDecode(res.body)['error']);
+//       }
+//     } catch (e) {
+//       rethrow;
+//     }
+//   }
 
-  Future<void> addExpense(ExpenseDto expense) async {
-    final db = await database;
+//   Future<bool> changePassword({
+//     required String oldPassword,
+//     required String newPassword,
+//     required String token,
+//     required int id,
+//   }) async {
+//     try {
+//       http.Response res = await http.put(
+//         Uri.parse('$uri/profile/update/changepassword/$id'),
+//         body: jsonEncode({
+//           'oldPassword': oldPassword,
+//           'newPassword': newPassword,
+//         }),
+//         headers: <String, String>{
+//           'Content-Type': 'application/json; charset=UTF-8',
+//           'auth-token': token,
+//         },
+//       );
+//       if (res.statusCode == 200) {
+//         return true;
+//       } else {
+//         return false;
+//       }
+//     } catch (err) {
+//       rethrow;
+//     }
+//   }
 
-    await db.insert('expenses', expense.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-  }
+//   // phone number validation
+//   Future<bool> phoneValidate({
+//     required String phoneNumber,
+//   }) async {
+//     try {
+//       http.Response res = await http.post(
+//         Uri.parse('$uri/auth/signupInputValidate'),
+//         body: jsonEncode({
+//           'phoneNumber': phoneNumber,
+//         }),
+//         headers: <String, String>{
+//           'Content-Type': 'application/json; charset=UTF-8'
+//         },
+//       );
+//       if (res.statusCode == 200) {
+//         return true;
+//       } else {
+//         throw Exception(jsonDecode(res.body)['error']);
+//       }
+//     } catch (e) {
+//       // ignore: avoid_print
+//       print(e);
+//     }
+//     return false;
+//   }
 
-  Future<void> updateExpense(ExpenseDto expense) async {
-    final db = await database;
+//   Future<User> editProfile(attribute, value, token) async {
+//     try {
+//       http.Response response = await http.put(
+//         Uri.parse('$uri/profile/update'),
+//         body: jsonEncode({"attribute": attribute, "value": value}),
+//         headers: <String, String>{
+//           'Content-Type': 'application/json; charset=UTF-8',
+//           'auth-token': token
+//         },
+//       );
 
-    await db.update('expenses', expense.toMap(),
-        where: 'id = ?', whereArgs: [expense.id]);
-  }
+//       if (response.statusCode == 200) {
+//         User user = User.fromJson(response.body);
+//         return user;
+//       } else {
+//         throw Exception(jsonDecode(response.body)['error']);
+//       }
+//     } catch (err) {
+//       rethrow;
+//     }
+//   }
 
-  Future<void> deleteExpense(int id) async {
-    final db = await database;
-
-    await db.delete('expenses', where: 'id = ?', whereArgs: [id]);
-  }
+//   Future<bool> deleteProfile(id, token) async {
+//     try {
+//       http.Response response = await http.delete(
+//         Uri.parse('$uri/profile/delete/$id'),
+//         headers: <String, String>{
+//           'Content-Type': 'application/json; charset=UTF-8',
+//           'auth-token': token
+//         },
+//       );
+//       print('----------------${response.statusCode}');
+//       if (response.statusCode == 204) {
+//         return true;
+//       } else {
+//         throw Exception(jsonDecode(response.body)['error']);
+//       }
+//     } catch (err) {
+//       rethrow;
+//     }
+//   }
 }

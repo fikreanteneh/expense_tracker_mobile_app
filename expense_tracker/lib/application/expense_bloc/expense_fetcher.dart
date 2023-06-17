@@ -50,7 +50,7 @@ class ExpenseFetcher {
 
   static Future<bool> addBudjet(BudgetDto budget) async {
     final result = await http.post(
-      Uri.parse('$uri/expense/createbudget'),
+      Uri.parse('$uri/budget/post'),
       headers: {'Content-Type': 'application/json; charset=UTF-8'},
       body: jsonEncode(
         {

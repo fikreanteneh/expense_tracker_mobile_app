@@ -73,9 +73,11 @@ class _TimeFrameBudgetState extends State<TimeFrameBudget> {
             itemBuilder: (context, index) {
               return Card(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       DateFormat.yMMMM().format(items[index].date),
+                      textAlign: TextAlign.left,
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold),
                     ),

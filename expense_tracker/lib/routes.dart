@@ -47,6 +47,12 @@ class Initial extends StatefulWidget {
 }
 
 class _InitialState extends State<Initial> {
+  void initState() {
+    super.initState();
+    final loginCubit = context.read<LoginCubit>();
+    loginCubit.loadCachedUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(listener: ((context, state) {

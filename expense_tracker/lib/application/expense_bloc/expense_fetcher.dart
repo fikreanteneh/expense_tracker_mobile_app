@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:expense_tracker/budget.dto.dart';
 import 'package:expense_tracker/expense.dto.dart';
 import 'package:expense_tracker/utils.dart';
 import 'package:http/http.dart' as http;
@@ -31,6 +32,18 @@ class ExpenseFetcher {
       return true;
     } else {
       throw Exception('Failed to create expense');
+    }
+  }
+
+  static Future<List<BudgetDto>> getBudget(int id) async {
+    final result = await http.get(Uri.parse('$uri/budget/$id'),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'});
+    if (result.statusCode == 200) {
+      List json = jsonDecode(result.body);
+      final budget = json.map((e) => BudgetDto.fromMap(e)).toList();
+      return budget;
+    } else {
+      throw Exception('Failed to load budgets');
     }
   }
 }

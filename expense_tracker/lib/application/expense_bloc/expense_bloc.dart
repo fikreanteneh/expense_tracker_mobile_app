@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:expense_tracker/application/expense_bloc/expense_fetcher.dart';
+import 'package:expense_tracker/budget.dto.dart';
 import 'package:expense_tracker/expense.dto.dart';
 import 'package:meta/meta.dart';
 
@@ -20,13 +21,17 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       LoadExpense event, Emitter<ExpenseState> emit) async {
     emit(ExpenseInitial());
     try {
-      print("======== expense fetching");
       List<ExpenseDto> expenses = await ExpenseFetcher.getExpense(event.id);
-      print("========${expenses.length}");
-      print("======== expense fetching finished");
+      List<BudgetDto> budgets = await ExpenseFetcher.getBudget(event.id);
 
-      Map organized = organizer(expenses);
-      emit(ExpenseLoaded(expenses: organized));
+      Map dateIndexes = {
+        "groupByDay": {},
+        "groupByMonth": {},
+        "groupByYear": {}
+      };
+      Map organized = organizer(expenses, dateIndexes);
+      Map organizedBudget = organizeBudget(budgets, organized, dateIndexes);
+      emit(ExpenseLoaded(expenses: organized, budgets: organizedBudget));
     } catch (e) {
       emit(ExpenseError(message: e.toString()));
     }
@@ -40,9 +45,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   FutureOr<void> _onDeleteExpense(
       DeleteExpense event, Emitter<ExpenseState> emit) {}
 
-  Map organizer(List<ExpenseDto> expenses) {
-    Map types = {"expense": 1, "income": 2};
-    // Map indexDays = {};
+  Map organizer(List<ExpenseDto> expenses, Map dataIndexes) {
     List groupByDay = [];
     List groupByMonth = [];
     List groupByYear = [];
@@ -50,6 +53,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     int lastDay = -1;
     int lastMonth = -1;
     int lastYear = -1;
+    Map types = {"expense": 1, "income": 2};
 
     for (var expense in expenses) {
       int dateNumber = expense.date.day;
@@ -60,40 +64,98 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       DateTime monthly = DateTime(yearNumber, monthNumber);
       DateTime yearly = DateTime(yearNumber);
 
-      if (groupByDay.isNotEmpty && groupByDay[0][0] == daily) {
-        groupByDay[lastDay][types[expense.category]] += expense.amount;
+      double income = expense.type == "income" ? expense.amount : 0;
+      double expend = expense.type == "expense" ? expense.amount : 0;
+
+      if (groupByDay.isNotEmpty && groupByDay[lastDay][0] == daily) {
+        groupByDay[lastDay][types[expense.type]] += expense.amount;
         groupByDay[lastDay][3].add(expense);
       } else {
         groupByDay.add([
           daily,
-          expense.amount,
+          expend,
+          income,
           [expense]
         ]);
         lastDay++;
       }
 
-      if (groupByMonth.isNotEmpty || groupByMonth[0][0] == monthly) {
-        groupByMonth[lastMonth][types[expense.category]] += expense.amount;
+      if (groupByMonth.isNotEmpty && groupByMonth[lastMonth][0] == monthly) {
+        groupByMonth[lastMonth][types[expense.type]] += expense.amount;
         groupByMonth[lastMonth][3].add(expense);
       } else {
         groupByMonth.add([
           monthly,
-          expense.amount,
+          expend,
+          income,
           [expense]
         ]);
         lastMonth++;
       }
 
-      if (groupByYear.isNotEmpty || groupByYear[0][0] == yearly) {
-        groupByYear[lastYear][types[expense.category]] += expense.amount;
+      if (groupByYear.isNotEmpty && groupByYear[lastYear][0] == yearly) {
+        groupByYear[lastYear][types[expense.type]] += expense.amount;
         groupByYear[lastYear][3].add(expense);
       } else {
         groupByYear.add([
           yearly,
-          expense.amount,
+          expend,
+          income,
           [expense]
         ]);
         lastYear++;
+      }
+    }
+
+    for (var i = 0; i < groupByDay.length; i++) {
+      dataIndexes["groupByDay"][groupByDay[i][0]] = i;
+    }
+    for (var i = 0; i < groupByMonth.length; i++) {
+      dataIndexes["groupByMonth"][groupByMonth[i][0]] = i;
+    }
+    for (var i = 0; i < groupByYear.length; i++) {
+      dataIndexes["groupByYear"][groupByYear[i][0]] = i;
+    }
+
+    return {
+      'groupByDay': groupByDay,
+      'groupByMonth': groupByMonth,
+      'groupByYear': groupByYear,
+    };
+  }
+
+  Map organizeBudget(List<BudgetDto> budgets, Map organized, Map dataIndexes) {
+    List groupByDay = [];
+    List groupByMonth = [];
+    List groupByYear = [];
+    budgets.sort((a, b) => a.date.compareTo(b.date));
+    for (var budget in budgets) {
+      int dateNumber = budget.date.day;
+      int monthNumber = budget.date.month;
+      int yearNumber = budget.date.year;
+
+      DateTime daily = DateTime(yearNumber, monthNumber, dateNumber);
+      DateTime monthly = DateTime(yearNumber, monthNumber);
+      DateTime yearly = DateTime(yearNumber);
+
+      if (budget.type == "monthly") {
+        if (dataIndexes["groupByMonth"].containsKey(monthly)) {
+          int index = dataIndexes["groupByMonth"][monthly];
+          double expend = organized["groupByMonth"][index][1];
+          double income = organized["groupByMonth"][index][2];
+          budget.income = income;
+          budget.expense = expend;
+        }
+        groupByMonth.add(budget);
+      } else if (budget.type == "yearly") {
+        if ((dataIndexes["groupByYear"]).containsKey(yearly)) {
+          int index = dataIndexes["groupByYear"][yearly];
+          double expend = organized["groupByYear"][index][1];
+          double income = organized["groupByYear"][index][2];
+          budget.income = income;
+          budget.expense = expend;
+        }
+        groupByYear.add(budget);
       }
     }
     return {

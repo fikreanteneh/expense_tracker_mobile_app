@@ -11,6 +11,8 @@ const connection = require("./config/dbconnection");
 //! custom Route imports
 const authRouter = require("./routes/auth");
 const expenseRouter = require("./routes/expense");
+const budgetRouter = require("./routes/budget");
+
 
 //! Global Middle-wares
 app.use(
@@ -24,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 //! Routes
 app.use("/auth", authRouter);
 app.use("/expense", expenseRouter);
+app.use("/budget", budgetRouter);
 
 
 //! Start Express server

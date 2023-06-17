@@ -1,3 +1,6 @@
+
+
+
 import 'package:expense_tracker/application/auth/login/login_cubit.dart';
 import 'package:expense_tracker/application/expense_bloc/expense_bloc.dart';
 import 'package:expense_tracker/utils.dart';
@@ -24,11 +27,11 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
             onPressed: () {
-              GoRouter.of(context).pushNamed("/addExpense");
+              GoRouter.of(context).pushNamed("/");
             },
             child: const Icon(Icons.add)),
         appBar: AppBar(
@@ -36,9 +39,6 @@ class _HomeState extends State<Home> {
             "Expense Tracker",
           ),
           bottom: const TabBar(tabs: [
-            Tab(
-              text: "Daily",
-            ),
             Tab(
               text: "Monthly",
             ),
@@ -48,30 +48,30 @@ class _HomeState extends State<Home> {
           ]),
         ),
         body: const TabBarView(children: [
-          TimeFrame(timeFrame: "groupByDay"),
-          TimeFrame(timeFrame: "groupByMonth"),
-          TimeFrame(timeFrame: "groupByYear"),
+          // TimeFrameBudget(timeFrame: "groupByDay"),
+          TimeFrameBudget(timeFrame: "groupByMonth"),
+          TimeFrameBudget(timeFrame: "groupByYear"),
         ]),
       ),
     );
   }
 }
 
-class TimeFrame extends StatefulWidget {
+class TimeFrameBudget extends StatefulWidget {
   final String timeFrame;
-  const TimeFrame({Key? key, required this.timeFrame}) : super(key: key);
+  const TimeFrameBudget({Key? key, required this.timeFrame}) : super(key: key);
 
   @override
-  State<TimeFrame> createState() => _TimeFrameState();
+  State<TimeFrameBudget> createState() => _TimeFrameBudgetState();
 }
 
-class _TimeFrameState extends State<TimeFrame> {
+class _TimeFrameBudgetState extends State<TimeFrameBudget> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ExpenseBloc, ExpenseState>(builder: (context, state) {
       if (state is ExpenseLoaded) {
         return ListView.builder(
-          itemCount: state.expenses[widget.timeFrame].length,
+          itemCount: state.budgets[widget.timeFrame].length,
           itemBuilder: (context, index) {
             return Column(
               children: [

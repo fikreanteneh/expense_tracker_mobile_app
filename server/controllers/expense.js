@@ -22,6 +22,7 @@ const getExpenseData = async (req, response) => {
 
 
 const createExpense = async (req, res) => {
+  console.log("=====",req.body);
     try{
         const {user_id, type, category, amount, date} = req.body;
         if (!user_id || !type || !category || !amount || !date) {

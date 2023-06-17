@@ -5,7 +5,7 @@ const { createExpense, getExpenseData, updateExpense, deleteExpense } = require(
 
 
 expenseRouter.get("/:id", getExpenseData);
-expenseRouter.post("/post", createExpense);
+expenseRouter.post("/create", createExpense);
 expenseRouter.put("/update", updateExpense);
 expenseRouter.delete("/:id", deleteExpense);
 

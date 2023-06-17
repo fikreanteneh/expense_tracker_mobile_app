@@ -28,6 +28,8 @@ const createBudget = async (req, res) => {
         if (!user_id || !type  || !amount || !date) {
             return res.status(400).json({ error: "Please fill all the fields" });
           }
+        // const query1 = `DELETE FROM budget WHERE id = ?`;
+        
         const query = "INSERT INTO budget (user_id, type, amount, date) VALUES (?,?,?,?)";
         connection.query(query, [user_id, type, amount, date], (err, result) => {
             if (err) {

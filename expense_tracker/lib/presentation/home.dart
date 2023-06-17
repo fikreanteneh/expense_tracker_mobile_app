@@ -1,8 +1,10 @@
 import 'package:expense_tracker/application/auth/login/login_cubit.dart';
 import 'package:expense_tracker/application/expense_bloc/expense_bloc.dart';
+import 'package:expense_tracker/expense.dto.dart';
 import 'package:expense_tracker/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -79,7 +81,12 @@ class _TimeFrameState extends State<TimeFrame> {
           },
           itemCount: state.expenses[widget.timeFrame].length,
           itemBuilder: (context, index) {
-            final DateFormat formatter = DateFormat('MMMM d, yyyy');
+            Map group = {
+              "groupByDay": DateFormat('MMMM d, yyyy'),
+              "groupByMonth": DateFormat('MMMM, yyyy'),
+              "groupByYear": DateFormat('yyyy')
+            };
+            final DateFormat formatter = group[widget.timeFrame];
             return Column(
               children: [
                 Container(
@@ -147,9 +154,11 @@ class _TimeFrameState extends State<TimeFrame> {
                           .toString();
                       String type = state
                           .expenses[widget.timeFrame][index][3][index1].type;
+                      ExpenseDto expenseDetail =
+                          state.expenses[widget.timeFrame][index][3][index1];
 
                       return Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 5, 20, 5),
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -182,7 +191,16 @@ class _TimeFrameState extends State<TimeFrame> {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w500),
                                     ),
-                                    const Text(" \$")
+                                    const Text(" \$"),
+                                    IconButton(
+                                      onPressed: () {
+                                        BlocProvider.of<ExpenseBloc>(context)
+                                            .add(DeleteExpense(
+                                                expense: expenseDetail));
+                                      },
+                                      icon: const Icon(Icons.delete),
+                                      color: Color.fromARGB(255, 75, 12, 7),
+                                    ),
                                   ],
                                 ),
                               ],

@@ -27,3 +27,9 @@ class AddBudjet extends ExpenseEvent {
   final BudgetDto budget;
   AddBudjet({required this.budget});
 }
+
+
+class DeleteBudget extends ExpenseEvent {
+  final BudgetDto budget;
+  DeleteBudget({required this.budget});
+}

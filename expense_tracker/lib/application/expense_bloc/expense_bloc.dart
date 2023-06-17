@@ -16,6 +16,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     on<UpdateExpense>(__onUpdateExpense);
     on<DeleteExpense>(_onDeleteExpense);
     on<AddBudjet>(_onAddBudget);
+    on<DeleteBudget>(_onDeleteBudget);
   }
 
   FutureOr<void> starter(int id) async {
@@ -54,7 +55,15 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       UpdateExpense event, Emitter<ExpenseState> emit) {}
 
   FutureOr<void> _onDeleteExpense(
-      DeleteExpense event, Emitter<ExpenseState> emit) {}
+      DeleteExpense event, Emitter<ExpenseState> emit) {
+    emit(ExpenseInitial());
+    try {
+      ExpenseFetcher.deleteExpense(event.expense.id);
+      starter(event.expense.user_id);
+    } catch (e) {
+      emit(ExpenseError(message: e.toString()));
+    }
+  }
 
   FutureOr<void> _onAddBudget(
       AddBudjet event, Emitter<ExpenseState> emit) async {
@@ -66,12 +75,21 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       emit(ExpenseError(message: e.toString()));
     }
   }
+    FutureOr<void> _onDeleteBudget(DeleteBudget event, Emitter<ExpenseState> emit) {
+    emit(ExpenseInitial());
+    try {
+      ExpenseFetcher.deleteBudget(event.budget.id);
+      starter(event.budget.user_id);
+    } catch (e) {
+      emit(ExpenseError(message: e.toString()));
+    }
+  }
 
   Map organizer(List<ExpenseDto> expenses, Map dataIndexes) {
     List groupByDay = [];
     List groupByMonth = [];
     List groupByYear = [];
-    expenses.sort((a, b) => a.date.compareTo(b.date));
+    expenses.sort((a, b) => b.date.compareTo(a.date));
     int lastDay = -1;
     int lastMonth = -1;
     int lastYear = -1;
@@ -150,7 +168,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     List groupByDay = [];
     List groupByMonth = [];
     List groupByYear = [];
-    budgets.sort((a, b) => a.date.compareTo(b.date));
+    budgets.sort((a, b) => b.date.compareTo(a.date));
     for (var budget in budgets) {
       int dateNumber = budget.date.day;
       int monthNumber = budget.date.month;
@@ -186,4 +204,6 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       'groupByYear': groupByYear,
     };
   }
+
+
 }

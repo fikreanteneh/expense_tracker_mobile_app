@@ -3,6 +3,7 @@ import 'package:expense_tracker/application/expense_bloc/expense_bloc.dart';
 import 'package:expense_tracker/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -68,27 +69,68 @@ class _TimeFrameBudgetState extends State<TimeFrameBudget> {
     return BlocBuilder<ExpenseBloc, ExpenseState>(builder: (context, state) {
       if (state is ExpenseLoaded) {
         List items = state.budgets[widget.timeFrame];
-        return ListView.builder(
+        return ListView.separated(
+            separatorBuilder: (context, index) => const Divider(),
             itemCount: items.length,
             itemBuilder: (context, index) {
-              return Card(
+              String dateFormat = widget.timeFrame == "groupByMonth"
+                  ? DateFormat.yMMMM().format(items[index].date)
+                  : DateFormat.y().format(items[index].date);
+              double amount =
+                  double.parse(items[index].amount.toStringAsFixed(2));
+              double expense =
+                  double.parse(items[index].expense.toStringAsFixed(2));
+              double income =
+                  double.parse(items[index].income.toStringAsFixed(2));
+              return Container(
+                padding: const EdgeInsets.all(5),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      DateFormat.yMMMM().format(items[index].date),
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(2, 3, 0, 3),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: const Color.fromARGB(255, 238, 238, 238),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            dateFormat,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 18),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              BlocProvider.of<ExpenseBloc>(context)
+                                  .add(DeleteBudget(budget: items[index]));
+                            },
+                            icon: const Icon(Icons.delete),
+                            color: Color.fromARGB(255, 75, 12, 7),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text("amount ${items[index].amount.toString()}"),
-                    Text("expense ${items[index].expense.toString()}"),
+                    const SizedBox(height: 3),
+
+                    TextStyling(
+                        text: "Amount Budgeted", text2: amount, type: 1),
+                    const SizedBox(height: 3),
+                    TextStyling(text: "Amount Spent", text2: expense, type: 2),
+                    const SizedBox(height: 3),
+
+                    TextStyling(
+                        text: "Amount Saved", text2: amount - expense, type: 3),
+                    // TextStyling(
+                    //     text: "Expected Saving",
+                    //     text2: income - amount,
+                    //     type: 4),
                   ],
                 ),
               );
             });
-
-        return Column();
       } else if (state is ExpenseError) {
         return Center(child: Text(state.message));
       } else {
@@ -97,3 +139,55 @@ class _TimeFrameBudgetState extends State<TimeFrameBudget> {
     });
   }
 }
+
+class TextStyling extends StatelessWidget {
+  final String text;
+  final double text2;
+  final int type;
+  final Map colors = {1: Colors.green, 2: Colors.red, 3: Colors.blue};
+  // final Map saving = {1: FontAwesomeIcons.medkit, 2: FontAwesomeIcons.expe, 3: Colors.blue};
+
+  TextStyling(
+      {Key? key, required this.text, required this.text2, required this.type})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 2, 25, 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(
+                FontAwesomeIcons.arrowCircleRight,
+                color: colors[type],
+                size: 15,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                text,
+                style: textStyling,
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Text(
+                "$text2",
+                style: textStyling,
+              ),
+              const Icon(Icons.attach_money, size: 15),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+TextStyle textStyling = const TextStyle(
+  fontSize: 14,
+  fontWeight: FontWeight.w400,
+);

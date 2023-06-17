@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:expense_tracker/application/expense_bloc/expense_bloc.dart';
 import 'package:expense_tracker/budget.dto.dart';
 import 'package:expense_tracker/expense.dto.dart';
 import 'package:expense_tracker/utils.dart';
@@ -36,6 +37,16 @@ class ExpenseFetcher {
     }
   }
 
+  static Future<bool> deleteExpense(int id) async {
+    final result = await http.delete(Uri.parse('$uri/expense/$id'),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'});
+    if (result.statusCode == 204) {
+      return true;
+    } else {
+      throw Exception('Failed to Delete expense');
+    }
+  }
+
   static Future<List<BudgetDto>> getBudget(int id) async {
     final result = await http.get(Uri.parse('$uri/budget/$id'),
         headers: {'Content-Type': 'application/json; charset=UTF-8'});
@@ -66,6 +77,16 @@ class ExpenseFetcher {
       return true;
     } else {
       throw Exception('Failed to create expense');
+    }
+  }
+
+  static Future<bool> deleteBudget(int id) async {
+    final result = await http.delete(Uri.parse('$uri/budget/$id'),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'});
+    if (result.statusCode == 204) {
+      return true;
+    } else {
+      throw Exception('Failed to Delete budget');
     }
   }
 }

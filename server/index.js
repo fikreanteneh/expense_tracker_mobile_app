@@ -10,6 +10,7 @@ const connection = require("./config/dbconnection");
 
 //! custom Route imports
 const authRouter = require("./routes/auth");
+const expenseRouter = require("./routes/expense");
 
 //! Global Middle-wares
 app.use(
@@ -22,6 +23,8 @@ app.use(express.urlencoded({ extended: true }));
 
 //! Routes
 app.use("/auth", authRouter);
+app.use("/expense", expenseRouter);
+
 
 //! Start Express server
 const PORT = process.env.PORT || 3000;

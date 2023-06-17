@@ -3,7 +3,10 @@ part of 'expense_bloc.dart';
 @immutable
 abstract class ExpenseEvent {}
 
-class LoadExpense extends ExpenseEvent {}
+class LoadExpense extends ExpenseEvent {
+  final int id;
+  LoadExpense({required this.id});
+}
 
 class AddExpense extends ExpenseEvent {
   final ExpenseDto expense;

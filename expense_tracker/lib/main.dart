@@ -1,5 +1,6 @@
 import 'package:expense_tracker/application/auth/login/login_cubit.dart';
 import 'package:expense_tracker/application/auth/signup/signup_cubit.dart';
+import 'package:expense_tracker/application/expense_bloc/expense_bloc.dart';
 import 'package:expense_tracker/fetcher.dart';
 import 'package:expense_tracker/routes.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
           create: (context) => LoginCubit(Fetcher()),
         ),
         BlocProvider(create: (context) => SignupCubit(Fetcher())),
+        BlocProvider(create: (context) => ExpenseBloc()),
       ],
       child: MaterialApp.router(
         routerDelegate: router.routerDelegate,

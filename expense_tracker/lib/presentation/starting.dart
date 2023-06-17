@@ -42,12 +42,6 @@ class _StartingState extends State<Starting> {
           BottomNavigationBarItem(
             icon: Container(
               width: bottomBarWidth,
-              decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(
-                color: _page == 0 ? Colors.blue : Colors.transparent,
-                width: bottomBarBorderWidth,
-              ))),
               child: const Icon(Icons.home_outlined),
             ),
             label: "Home",
@@ -57,28 +51,16 @@ class _StartingState extends State<Starting> {
           BottomNavigationBarItem(
             icon: Container(
               width: bottomBarWidth,
-              decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(
-                color: _page == 1 ? Colors.blue : Colors.transparent,
-                width: bottomBarBorderWidth,
-              ))),
               child: const Icon(Icons.medical_services),
             ),
-            label: "Categories",
+            label: "Budgets",
           ),
 
           //appointment
           BottomNavigationBarItem(
             icon: Container(
               width: bottomBarWidth,
-              decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(
-                color: _page == 2 ? Colors.blue : Colors.transparent,
-                width: bottomBarBorderWidth,
-              ))),
-              child: const Icon(Icons.lock_clock),
+              child: const Icon(Icons.bar_chart_outlined),
             ),
             label: "Charts",
           ),
@@ -87,12 +69,6 @@ class _StartingState extends State<Starting> {
           BottomNavigationBarItem(
             icon: Container(
               width: bottomBarWidth,
-              decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(
-                color: _page == 3 ? Colors.blue : Colors.transparent,
-                width: bottomBarBorderWidth,
-              ))),
               child: const Icon(Icons.person_outline),
             ),
             label: "Profile",

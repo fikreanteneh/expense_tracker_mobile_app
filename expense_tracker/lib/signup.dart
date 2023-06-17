@@ -32,7 +32,7 @@ class _SignUpScreen extends State<SignUpScreen> {
         listeners: [
           BlocListener<SignupCubit, SignupState>(listener: (context, state) {
             if (state.status == SignupStatus.success) {
-              GoRouter.of(context).go('/login');
+              GoRouter.of(context).go('/');
             }
           }),
         ],
@@ -75,7 +75,7 @@ class _SignUpScreen extends State<SignUpScreen> {
                             Center(
                               child: GestureDetector(
                                 onTap: () {
-                                  GoRouter.of(context).push('/signin');
+                                  GoRouter.of(context).push('/');
                                 },
                                 child: const Text.rich(
                                   TextSpan(

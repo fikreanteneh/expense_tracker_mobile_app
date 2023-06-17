@@ -3,24 +3,31 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class User {
+  final int id;
   final String username;
   final String passwrod;
   final String token;
 
-  User({required this.username, required this.passwrod, required this.token});
+  User(
+      {required this.username,
+      required this.passwrod,
+      required this.token,
+      required this.id});
 
   factory User.fromJson(Map<String, dynamic> map) {
     return User(
+      id: map["id"] ?? 0,
       passwrod: map["password"] ?? '',
       username: map["username"] ?? '',
       token: map["token"] ?? '',
     );
   }
 
-  static User empty = User(username: '', passwrod: '', token: '');
+  static User empty = User(id: 8, username: '', passwrod: '', token: '');
 
   Map<String, dynamic> toMap() {
     return {
+      "id": id,
       "username": username,
       "password": passwrod,
       "token": token,

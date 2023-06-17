@@ -80,7 +80,7 @@ class _LoginFormState extends State<LoginForm> {
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    GoRouter.of(context).go('/');
+                    GoRouter.of(context).go('/signup');
                   },
                   child: const Text.rich(
                     TextSpan(

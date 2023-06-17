@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
+import 'package:expense_tracker/application/expense_bloc/expense_fetcher.dart';
 import 'package:expense_tracker/expense.dto.dart';
 import 'package:meta/meta.dart';
 
@@ -7,30 +10,39 @@ part 'expense_state.dart';
 
 class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   ExpenseBloc() : super(ExpenseInitial()) {
-    on<LoadExpense>((event, emit) => {
-      emit(ExpenseInitial())
-      try{
-        // List<ExpenseDto> expenses = await data.getEx();
-        // List<ExpenseDto> budgets = await data.getEx();
-
-        // states = organizer(expenses;)
-        // emit(ExpenseLoaded(expenses: states));
-
-      }catch(e){
-        emit(ExpenseError(message: e.toString()));
-      }
-    });
-
-    on<AddExpense>((event, emit) => {});
-
-    on<UpdateExpense>((event, emit) => {});
-
-    on<DeleteExpense>((event, emit) => {});
+    on<LoadExpense>(_onLoadExpense);
+    on<AddExpense>(_onAddExpense);
+    on<UpdateExpense>(__onUpdateExpense);
+    on<DeleteExpense>(_onDeleteExpense);
   }
 
-  organizer(List<ExpenseDto> expenses) {
-    Map types = {"expense":1, "income":2};
-    // Map indexDays = {};  
+  FutureOr<void> _onLoadExpense(
+      LoadExpense event, Emitter<ExpenseState> emit) async {
+    emit(ExpenseInitial());
+    try {
+      print("======== expense fetching");
+      List<ExpenseDto> expenses = await ExpenseFetcher.getExpense(event.id);
+      print("========${expenses.length}");
+      print("======== expense fetching finished");
+
+      Map organized = organizer(expenses);
+      emit(ExpenseLoaded(expenses: organized));
+    } catch (e) {
+      emit(ExpenseError(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> _onAddExpense(AddExpense event, Emitter<ExpenseState> emit) {}
+
+  FutureOr<void> __onUpdateExpense(
+      UpdateExpense event, Emitter<ExpenseState> emit) {}
+
+  FutureOr<void> _onDeleteExpense(
+      DeleteExpense event, Emitter<ExpenseState> emit) {}
+
+  Map organizer(List<ExpenseDto> expenses) {
+    Map types = {"expense": 1, "income": 2};
+    // Map indexDays = {};
     List groupByDay = [];
     List groupByMonth = [];
     List groupByYear = [];
@@ -83,12 +95,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         ]);
         lastYear++;
       }
-
+    }
     return {
       'groupByDay': groupByDay,
       'groupByMonth': groupByMonth,
       'groupByYear': groupByYear,
     };
   }
-}
 }

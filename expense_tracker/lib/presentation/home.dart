@@ -1,6 +1,8 @@
+import 'package:expense_tracker/application/auth/login/login_cubit.dart';
 import 'package:expense_tracker/application/expense_bloc/expense_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -10,6 +12,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  void initState() {
+    final expenseBloc = BlocProvider.of<ExpenseBloc>(context);
+    final authBloc = BlocProvider.of<LoginCubit>(context);
+    expenseBloc.add(LoadExpense(id: authBloc.state.user.id));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -17,7 +26,7 @@ class _HomeState extends State<Home> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
             onPressed: () {
-              // Navigator.pushNamed(context, "/addExpense");
+              GoRouter.of(context).pushNamed("/addExpense");
             },
             child: const Icon(Icons.add)),
         appBar: AppBar(
@@ -36,11 +45,14 @@ class _HomeState extends State<Home> {
             )
           ]),
         ),
-        
         body: const TabBarView(children: [
-          TimeFrame(timeFrame: "groupByDay"),
-          TimeFrame(timeFrame: "groupByMonth"),
-          TimeFrame(timeFrame: "groupByyear"),
+          Text("daily"),
+          Text("daily"),
+          Text("daily")
+
+          // TimeFrame(timeFrame: "groupByDay"),
+          // TimeFrame(timeFrame: "groupByMonth"),
+          // TimeFrame(timeFrame: "groupByyear"),
         ]),
       ),
     );
@@ -65,10 +77,7 @@ class _TimeFrameState extends State<TimeFrame> {
           itemBuilder: (context, index) {
             return Container(
               child: ListView.builder(itemBuilder: (context, index2) {
-                return Card(
-                  title: Text(state.expenses[index2].name),
-                  subtitle: Text(state.expenses[index2].amount.toString()),
-                );
+                return Card();
               }),
             );
           },

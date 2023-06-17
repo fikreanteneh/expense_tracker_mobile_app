@@ -31,10 +31,12 @@ class SignupCubit extends Cubit<SignupState> {
     if (state.status == SignupStatus.submitting) return;
     emit(state.copyWith(status: SignupStatus.submitting));
     try {
+      print("===========submitting == ${state.username}}");
       User? user = await _fetcher.signUpUser(
         username: state.username,
         password: state.password,
       );
+      print("===========Completed == ${state.username}}");
 
       if (user != User.empty) {
         emit(state.copyWith(status: SignupStatus.success));

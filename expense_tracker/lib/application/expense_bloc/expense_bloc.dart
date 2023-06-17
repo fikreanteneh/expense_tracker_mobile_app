@@ -15,35 +15,57 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     on<AddExpense>(_onAddExpense);
     on<UpdateExpense>(__onUpdateExpense);
     on<DeleteExpense>(_onDeleteExpense);
+    on<AddBudjet>(_onAddBudget);
+  }
+
+  FutureOr<void> starter(int id) async {
+    List<ExpenseDto> expenses = await ExpenseFetcher.getExpense(id);
+    List<BudgetDto> budgets = await ExpenseFetcher.getBudget(id);
+
+    Map dateIndexes = {"groupByDay": {}, "groupByMonth": {}, "groupByYear": {}};
+    Map organized = organizer(expenses, dateIndexes);
+    Map organizedBudget = organizeBudget(budgets, organized, dateIndexes);
+
+    emit(ExpenseLoaded(expenses: organized, budgets: organizedBudget));
   }
 
   FutureOr<void> _onLoadExpense(
       LoadExpense event, Emitter<ExpenseState> emit) async {
     emit(ExpenseInitial());
     try {
-      List<ExpenseDto> expenses = await ExpenseFetcher.getExpense(event.id);
-      List<BudgetDto> budgets = await ExpenseFetcher.getBudget(event.id);
-
-      Map dateIndexes = {
-        "groupByDay": {},
-        "groupByMonth": {},
-        "groupByYear": {}
-      };
-      Map organized = organizer(expenses, dateIndexes);
-      Map organizedBudget = organizeBudget(budgets, organized, dateIndexes);
-      emit(ExpenseLoaded(expenses: organized, budgets: organizedBudget));
+      starter(event.id);
     } catch (e) {
       emit(ExpenseError(message: e.toString()));
     }
   }
 
-  FutureOr<void> _onAddExpense(AddExpense event, Emitter<ExpenseState> emit) {}
+  FutureOr<void> _onAddExpense(
+      AddExpense event, Emitter<ExpenseState> emit) async {
+    emit(ExpenseInitial());
+    try {
+      await ExpenseFetcher.addExpense(event.expense);
+      starter(event.expense.user_id);
+    } catch (e) {
+      emit(ExpenseError(message: e.toString()));
+    }
+  }
 
   FutureOr<void> __onUpdateExpense(
       UpdateExpense event, Emitter<ExpenseState> emit) {}
 
   FutureOr<void> _onDeleteExpense(
       DeleteExpense event, Emitter<ExpenseState> emit) {}
+
+  FutureOr<void> _onAddBudget(
+      AddBudjet event, Emitter<ExpenseState> emit) async {
+    emit(ExpenseInitial());
+    try {
+      await ExpenseFetcher.addBudjet(event.budget);
+      starter(event.budget.user_id);
+    } catch (e) {
+      emit(ExpenseError(message: e.toString()));
+    }
+  }
 
   Map organizer(List<ExpenseDto> expenses, Map dataIndexes) {
     List groupByDay = [];

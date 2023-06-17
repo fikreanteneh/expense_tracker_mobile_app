@@ -1,21 +1,19 @@
-
-
-
 import 'package:expense_tracker/application/auth/login/login_cubit.dart';
 import 'package:expense_tracker/application/expense_bloc/expense_bloc.dart';
 import 'package:expense_tracker/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class Budget extends StatefulWidget {
+  const Budget({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<Budget> createState() => _BudgetState();
 }
 
-class _HomeState extends State<Home> {
+class _BudgetState extends State<Budget> {
   @override
   void initState() {
     final expenseBloc = BlocProvider.of<ExpenseBloc>(context);
@@ -31,7 +29,7 @@ class _HomeState extends State<Home> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
             onPressed: () {
-              GoRouter.of(context).pushNamed("/");
+              GoRouter.of(context).push("/home/addbudget");
             },
             child: const Icon(Icons.add)),
         appBar: AppBar(
@@ -48,7 +46,6 @@ class _HomeState extends State<Home> {
           ]),
         ),
         body: const TabBarView(children: [
-          // TimeFrameBudget(timeFrame: "groupByDay"),
           TimeFrameBudget(timeFrame: "groupByMonth"),
           TimeFrameBudget(timeFrame: "groupByYear"),
         ]),
@@ -70,71 +67,26 @@ class _TimeFrameBudgetState extends State<TimeFrameBudget> {
   Widget build(BuildContext context) {
     return BlocBuilder<ExpenseBloc, ExpenseState>(builder: (context, state) {
       if (state is ExpenseLoaded) {
+        List items = state.budgets[widget.timeFrame];
         return ListView.builder(
-          itemCount: state.budgets[widget.timeFrame].length,
-          itemBuilder: (context, index) {
-            return Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              return Card(
+                child: Column(
                   children: [
-                    Text(state.expenses[widget.timeFrame][index][0]
-                        .toString()
-                        .substring(0, 11)),
-                    Row(
-                      children: [
-                        Text(state.expenses[widget.timeFrame][index][1]
-                            .toString()),
-                        Text(state.expenses[widget.timeFrame][index][2]
-                            .toString()),
-                      ],
-                    )
+                    Text(
+                      DateFormat.yMMMM().format(items[index].date),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    Text("amount ${items[index].amount.toString()}"),
+                    Text("expense ${items[index].expense.toString()}"),
                   ],
                 ),
-                if (state.expenses[widget.timeFrame][index][3] != null &&
-                    state.expenses[widget.timeFrame][index][3].isNotEmpty)
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount:
-                        state.expenses[widget.timeFrame][index][3].length,
-                    itemBuilder: (context, index1) {
-                      String amount = state
-                          .expenses[widget.timeFrame][index][3][index1].amount
-                          .toString();
-                      String type = state
-                          .expenses[widget.timeFrame][index][3][index1].type;
+              );
+            });
 
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              catagory[state
-                                  .expenses[widget.timeFrame][index][3][index1]
-                                  .category],
-                              Text(
-                                state
-                                    .expenses[widget.timeFrame][index][3]
-                                        [index1]
-                                    .category
-                                    .toString(),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(type == "income" ? "+$amount" : "-$amount"),
-                            ],
-                          )
-                        ],
-                      );
-                    },
-                  ),
-              ],
-            );
-          },
-        );
+        return Column();
       } else if (state is ExpenseError) {
         return Center(child: Text(state.message));
       } else {

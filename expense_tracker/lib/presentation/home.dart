@@ -4,6 +4,7 @@ import 'package:expense_tracker/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -28,12 +29,12 @@ class _HomeState extends State<Home> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
             onPressed: () {
-              GoRouter.of(context).pushNamed("/addExpense");
+              GoRouter.of(context).push("/home/addExpense");
             },
             child: const Icon(Icons.add)),
         appBar: AppBar(
           title: const Text(
-            "Expense Tracker",
+            "Balance - \$1000",
           ),
           bottom: const TabBar(tabs: [
             Tab(
@@ -70,27 +71,69 @@ class _TimeFrameState extends State<TimeFrame> {
   Widget build(BuildContext context) {
     return BlocBuilder<ExpenseBloc, ExpenseState>(builder: (context, state) {
       if (state is ExpenseLoaded) {
-        return ListView.builder(
+        return ListView.separated(
+          separatorBuilder: (context, index) {
+            return const SizedBox(
+              height: 35,
+            );
+          },
           itemCount: state.expenses[widget.timeFrame].length,
           itemBuilder: (context, index) {
+            final DateFormat formatter = DateFormat('MMMM d, yyyy');
             return Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(state.expenses[widget.timeFrame][index][0]
-                        .toString()
-                        .substring(0, 11)),
-                    Row(
-                      children: [
-                        Text(state.expenses[widget.timeFrame][index][1]
-                            .toString()),
-                        Text(state.expenses[widget.timeFrame][index][2]
-                            .toString()),
-                      ],
-                    )
-                  ],
+                Container(
+                  padding: const EdgeInsets.fromLTRB(15, 7, 15, 7),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: const Color.fromARGB(255, 234, 234, 234)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        formatter
+                            .format(state.expenses[widget.timeFrame][index][0]),
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      Row(
+                        children: [
+                          Row(
+                            children: [
+                              const Text("Expense ",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                      color: Colors.blue)),
+                              Text(
+                                state.expenses[widget.timeFrame][index][1]
+                                    .toString(),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 20),
+                          Row(
+                            children: [
+                              const Text("Income ",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                      color: Colors.blue)),
+                              Text(
+                                state.expenses[widget.timeFrame][index][2]
+                                    .toString(),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
+                const SizedBox(height: 8),
                 if (state.expenses[widget.timeFrame][index][3] != null &&
                     state.expenses[widget.timeFrame][index][3].isNotEmpty)
                   ListView.builder(
@@ -105,29 +148,47 @@ class _TimeFrameState extends State<TimeFrame> {
                       String type = state
                           .expenses[widget.timeFrame][index][3][index1].type;
 
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              catagory[state
-                                  .expenses[widget.timeFrame][index][3][index1]
-                                  .category],
-                              Text(
-                                state
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 20, 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                catagory[state
                                     .expenses[widget.timeFrame][index][3]
                                         [index1]
-                                    .category
-                                    .toString(),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(type == "income" ? "+$amount" : "-$amount"),
-                            ],
-                          )
-                        ],
+                                    .category],
+                                const SizedBox(width: 10),
+                                Text(
+                                  state
+                                      .expenses[widget.timeFrame][index][3]
+                                          [index1]
+                                      .category
+                                      .toString(),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      type == "income"
+                                          ? "+ $amount"
+                                          : "-$amount",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    const Text(" \$")
+                                  ],
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
                       );
                     },
                   ),

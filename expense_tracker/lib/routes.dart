@@ -1,7 +1,7 @@
 import 'package:expense_tracker/application/auth/login/login_cubit.dart';
 import 'package:expense_tracker/application/auth/signup/signup_cubit.dart';
-import 'package:expense_tracker/application/expense_bloc/expense_bloc.dart';
 import 'package:expense_tracker/fetcher.dart';
+import 'package:expense_tracker/presentation/add_budget.dart';
 import 'package:expense_tracker/presentation/add_expense.dart';
 import 'package:expense_tracker/presentation/starting.dart';
 import 'package:expense_tracker/signin.dart';
@@ -34,6 +34,10 @@ GoRouter router = GoRouter(
           path: 'addExpense',
           builder: (context, state) => const AddExpensePage(),
         ),
+        GoRoute(
+          path: 'addbudget',
+          builder: (context, state) => const AddBudgetPage(),
+        ),
       ],
     ),
   ],
@@ -43,14 +47,15 @@ class Initial extends StatefulWidget {
   const Initial({Key? key}) : super(key: key);
 
   @override
-  _InitialState createState() => _InitialState();
+  State<Initial> createState() => _InitialState();
 }
 
 class _InitialState extends State<Initial> {
+  @override
   void initState() {
+    final authBloc = BlocProvider.of<LoginCubit>(context);
+    authBloc.loadCachedUser();
     super.initState();
-    final loginCubit = context.read<LoginCubit>();
-    loginCubit.loadCachedUser();
   }
 
   @override
@@ -60,7 +65,7 @@ class _InitialState extends State<Initial> {
         GoRouter.of(context).go("/home");
       }
     }), builder: (context, state) {
-      return LoginScreen();
+      return const LoginScreen();
     });
   }
 }

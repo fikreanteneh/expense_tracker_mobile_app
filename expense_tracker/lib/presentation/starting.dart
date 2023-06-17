@@ -1,3 +1,5 @@
+import 'package:expense_tracker/charts.dart';
+import 'package:expense_tracker/presentation/budget.dart';
 import 'package:expense_tracker/presentation/home.dart';
 import 'package:flutter/material.dart';
 
@@ -15,8 +17,8 @@ class _StartingState extends State<Starting> {
   double bottomBarBorderWidth = 5;
   List<Widget> pages = [
     const Home(),
-    const Home(),
-    const Home(),
+    const Budget(),
+    const ChartPage(),
     const Home(),
 
     // const Categories(),

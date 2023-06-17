@@ -19,19 +19,20 @@ class ExpenseFetcher {
   }
 
   static Future<bool> addExpense(ExpenseDto expense) async {
-    final result = await http.post(Uri.parse('$uri/expense/post'),
+    final result = await http.post(Uri.parse('$uri/expense/create'),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode({
           "amount": expense.amount,
-          "date": expense.date,
           "category": expense.category,
+          "date": expense.date.toIso8601String(),
           "user_id": expense.user_id,
-          "type": expense.type
+          "type": expense.type,
         }));
+
     if (result.statusCode == 200) {
       return true;
     } else {
-      throw Exception('Failed to create expense');
+      throw Exception('Failed to add expense');
     }
   }
 
@@ -44,6 +45,27 @@ class ExpenseFetcher {
       return budget;
     } else {
       throw Exception('Failed to load budgets');
+    }
+  }
+
+  static Future<bool> addBudjet(BudgetDto budget) async {
+    final result = await http.post(
+      Uri.parse('$uri/expense/createbudget'),
+      headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      body: jsonEncode(
+        {
+          "amount": budget.amount,
+          "date": budget.date.toIso8601String(),
+          "user_id": budget.user_id,
+          "type": budget.type,
+        },
+      ),
+    );
+
+    if (result.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to create expense');
     }
   }
 }

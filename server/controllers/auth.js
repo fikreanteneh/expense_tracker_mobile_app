@@ -27,7 +27,7 @@ const signUp = async (req, response) => {
       const id = result[0].id;
       const payload = { id: id };
       const token = jwt.sign(payload, "secret-token-key");
-      return response.status(200).json({ username: username, token: token });
+      return response.status(200).json({id:result[0].id, username: username, token: token });
     });
   } catch (error) {
     return response.status(500).json({ error: error.message });
@@ -56,7 +56,7 @@ const signIn = async (req, res) => {
 
       const payload = { id: result[0].id, role: result[0].role };
       const token = jwt.sign(payload, "secret-token-key");
-      const response = { username: username, token: token };
+      const response = {id:result[0].id, username: username, token: token };
       return res.status(200).json(response);
     });
   } catch (e) {

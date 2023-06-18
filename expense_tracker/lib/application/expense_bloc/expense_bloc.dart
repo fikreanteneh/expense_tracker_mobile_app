@@ -26,7 +26,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     Map dateIndexes = {"groupByDay": {}, "groupByMonth": {}, "groupByYear": {}};
     Map organized = organizer(expenses, dateIndexes);
     Map organizedBudget = organizeBudget(budgets, organized, dateIndexes);
-
+    // dividing(organized);
     emit(ExpenseLoaded(expenses: organized, budgets: organizedBudget));
   }
 
@@ -75,7 +75,9 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       emit(ExpenseError(message: e.toString()));
     }
   }
-    FutureOr<void> _onDeleteBudget(DeleteBudget event, Emitter<ExpenseState> emit) {
+
+  FutureOr<void> _onDeleteBudget(
+      DeleteBudget event, Emitter<ExpenseState> emit) {
     emit(ExpenseInitial());
     try {
       ExpenseFetcher.deleteBudget(event.budget.id);
@@ -164,6 +166,32 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     };
   }
 
+  void dividing(grouped) {
+    for (var group in grouped) {
+      List dtos = grouped[3];
+      Map category = {};
+
+      for (var dto in group[3]) {
+        if (category.containsKey(dto.date.category)) {
+          category[dto.category][0] += dto.amount;
+        } else {
+          category[dto.category] = [dto.amount, dto.type, dto.user_id];
+        }
+      }
+
+      List categories = [];
+      for (var key in category.keys) {
+        categories.add(ExpenseDto(
+            user_id: categories[key][2],
+            type: categories[key][1],
+            category: key,
+            date: dtos[0],
+            amount: categories[key][0]));
+      }
+      group[3] = categories;
+    }
+  }
+
   Map organizeBudget(List<BudgetDto> budgets, Map organized, Map dataIndexes) {
     List groupByDay = [];
     List groupByMonth = [];
@@ -204,6 +232,4 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       'groupByYear': groupByYear,
     };
   }
-
-
 }

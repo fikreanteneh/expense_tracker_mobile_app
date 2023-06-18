@@ -20,10 +20,6 @@ class _StartingState extends State<Starting> {
     const Budget(),
     const ChartPage(),
     const Home(),
-
-    // const Categories(),
-    // const Chart(),
-    // const Profile(),
   ];
 
   @override

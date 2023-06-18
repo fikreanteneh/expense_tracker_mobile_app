@@ -68,7 +68,7 @@ List<PieChartSectionData> getSections(int index, String cadence, Map expense) {
 
   List<PieChartSectionData> value = [];
 
-  double total = sections.remove("total");
+  double total = double.parse(sections.remove("total").toString());
   for (MapEntry<dynamic, dynamic> entry in sections.entries) {
     print(entry.value);
     value.add(PieChartSectionData(
@@ -82,3 +82,4 @@ List<PieChartSectionData> getSections(int index, String cadence, Map expense) {
   }
   return value;
 }
+

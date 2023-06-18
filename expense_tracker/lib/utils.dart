@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // String uri = 'http://192.168.187.111:3000';
-// String uri = 'http://10.4.96.92:3000';
-String uri = 'http://localhost:3000';
+String uri = 'http://10.4.96.92:3000';
+// String uri = 'http://localhost:3000';
 
 void showSnackBar(BuildContext context, String text) {
   ScaffoldMessenger.of(context).showSnackBar(

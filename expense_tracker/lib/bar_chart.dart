@@ -91,97 +91,103 @@ class _BarChartPageState extends State<BarChartPage> {
                         const SizedBox(
                           height: 30,
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Container(
-                              width: dailyExp.length * 75,
-                              padding: const EdgeInsets.all(20),
-                              height: 400,
-                              child: BarChart(
-                                BarChartData(
-                                    borderData: FlBorderData(show: false),
-                                    gridData: const FlGridData(show: false),
-                                    groupsSpace: 80,
-                                    titlesData: FlTitlesData(
-                                      rightTitles: const AxisTitles(
-                                        sideTitles:
-                                            SideTitles(showTitles: false),
-                                      ),
-                                      topTitles: const AxisTitles(
-                                        sideTitles:
-                                            SideTitles(showTitles: false),
-                                      ),
-                                      bottomTitles: AxisTitles(
-                                        sideTitles: SideTitles(
-                                          showTitles: true,
-                                          getTitlesWidget:
-                                              (double value, TitleMeta meta) {
-                                            const style = TextStyle(
-                                              color: Colors.purple,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            );
-                                            Widget text;
-                                            text = Text(
-                                              formatDate(
-                                                  dailyExp[value.toInt()][0]),
-                                              style: style,
-                                            );
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            height: 300,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Container(
+                                width: dailyExp.length * 70 > 300
+                                    ? dailyExp.length * 70
+                                    : 300,
+                                padding: const EdgeInsets.all(20),
+                                height: 400,
+                                child: BarChart(
+                                  BarChartData(
+                                      borderData: FlBorderData(show: false),
+                                      gridData: const FlGridData(show: false),
+                                      groupsSpace: 80,
+                                      titlesData: FlTitlesData(
+                                        rightTitles: const AxisTitles(
+                                          sideTitles:
+                                              SideTitles(showTitles: false),
+                                        ),
+                                        topTitles: const AxisTitles(
+                                          sideTitles:
+                                              SideTitles(showTitles: false),
+                                        ),
+                                        bottomTitles: AxisTitles(
+                                          sideTitles: SideTitles(
+                                            showTitles: true,
+                                            getTitlesWidget:
+                                                (double value, TitleMeta meta) {
+                                              const style = TextStyle(
+                                                color: Colors.purple,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              );
+                                              Widget text;
+                                              text = Text(
+                                                formatDate(
+                                                    dailyExp[value.toInt()][0]),
+                                                style: style,
+                                              );
 
-                                            return SideTitleWidget(
-                                              angle: -45.0,
-                                              fitInside:
-                                                  const SideTitleFitInsideData(
-                                                      enabled: true,
-                                                      axisPosition: 10,
-                                                      parentAxisSize: 5,
-                                                      distanceFromEdge: -15),
-                                              axisSide: meta.axisSide,
-                                              child: text,
-                                            );
-                                          },
+                                              return SideTitleWidget(
+                                                angle: -45.0,
+                                                fitInside:
+                                                    const SideTitleFitInsideData(
+                                                        enabled: true,
+                                                        axisPosition: 10,
+                                                        parentAxisSize: 5,
+                                                        distanceFromEdge: -15),
+                                                axisSide: meta.axisSide,
+                                                child: text,
+                                              );
+                                            },
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    barGroups: dailyBar.barData
-                                        .map(
-                                          (data) => BarChartGroupData(
-                                              x: data.x,
-                                              barRods: [
-                                                BarChartRodData(
-                                                  toY: data.y,
-                                                  color: Colors.red,
-                                                  width: 15,
-                                                  borderRadius:
-                                                      const BorderRadius.only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  3),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  3)),
-                                                ),
-                                                BarChartRodData(
-                                                  backDrawRodData:
-                                                      BackgroundBarChartRodData(
-                                                          color: Colors.black),
-                                                  toY: data.z,
-                                                  color: Colors.green,
-                                                  width: 15,
-                                                  borderRadius:
-                                                      const BorderRadius.only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  3),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  3)),
-                                                ),
-                                              ]),
-                                        )
-                                        .toList()),
+                                      barGroups: dailyBar.barData
+                                          .map(
+                                            (data) => BarChartGroupData(
+                                                x: data.x,
+                                                barRods: [
+                                                  BarChartRodData(
+                                                    toY: data.y,
+                                                    color: Colors.red,
+                                                    width: 15,
+                                                    borderRadius:
+                                                        const BorderRadius.only(
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    3),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    3)),
+                                                  ),
+                                                  BarChartRodData(
+                                                    backDrawRodData:
+                                                        BackgroundBarChartRodData(
+                                                            color:
+                                                                Colors.black),
+                                                    toY: data.z,
+                                                    color: Colors.green,
+                                                    width: 15,
+                                                    borderRadius:
+                                                        const BorderRadius.only(
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    3),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    3)),
+                                                  ),
+                                                ]),
+                                          )
+                                          .toList()),
+                                ),
                               ),
                             ),
                           ),
@@ -242,87 +248,94 @@ class _BarChartPageState extends State<BarChartPage> {
                         const SizedBox(
                           height: 30,
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Container(
-                              width: monthlyExp.length * 70,
-                              child: BarChart(
-                                BarChartData(
-                                    borderData: FlBorderData(show: false),
-                                    gridData: const FlGridData(show: false),
-                                    groupsSpace: 50,
-                                    titlesData: FlTitlesData(
-                                        rightTitles: const AxisTitles(
-                                          sideTitles:
-                                              SideTitles(showTitles: false),
-                                        ),
-                                        topTitles: const AxisTitles(
-                                          sideTitles:
-                                              SideTitles(showTitles: false),
-                                        ),
-                                        bottomTitles: AxisTitles(
-                                          sideTitles: SideTitles(
-                                            showTitles: true,
-                                            getTitlesWidget:
-                                                (double value, TitleMeta meta) {
-                                              const style = TextStyle(
-                                                color: Colors.purple,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                              );
-                                              Widget text;
-                                              text = Text(
-                                                formatMonth(
-                                                    dailyExp[value.toInt()][0]),
-                                                style: style,
-                                              );
-
-                                              return SideTitleWidget(
-                                                axisSide: meta.axisSide,
-                                                child: text,
-                                              );
-                                            },
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            height: 300,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Container(
+                                width: monthlyExp.length * 70 > 300
+                                    ? monthlyExp.length * 70
+                                    : 300,
+                                child: BarChart(
+                                  BarChartData(
+                                      borderData: FlBorderData(show: false),
+                                      gridData: const FlGridData(show: false),
+                                      groupsSpace: 50,
+                                      titlesData: FlTitlesData(
+                                          rightTitles: const AxisTitles(
+                                            sideTitles:
+                                                SideTitles(showTitles: false),
                                           ),
-                                        )),
-                                    barGroups: monthBar.barData
-                                        .map(
-                                          (data) => BarChartGroupData(
-                                              x: data.x,
-                                              barRods: [
-                                                BarChartRodData(
-                                                  toY: data.y,
-                                                  color: Colors.red,
-                                                  width: 15,
-                                                  borderRadius:
-                                                      const BorderRadius.only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  3),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  3)),
-                                                ),
-                                                BarChartRodData(
-                                                  backDrawRodData:
-                                                      BackgroundBarChartRodData(
-                                                          color: Colors.black),
-                                                  toY: data.z,
-                                                  color: Colors.green,
-                                                  width: 15,
-                                                  borderRadius:
-                                                      const BorderRadius.only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  3),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  3)),
-                                                ),
-                                              ]),
-                                        )
-                                        .toList()),
+                                          topTitles: const AxisTitles(
+                                            sideTitles:
+                                                SideTitles(showTitles: false),
+                                          ),
+                                          bottomTitles: AxisTitles(
+                                            sideTitles: SideTitles(
+                                              showTitles: true,
+                                              getTitlesWidget: (double value,
+                                                  TitleMeta meta) {
+                                                const style = TextStyle(
+                                                  color: Colors.purple,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                );
+                                                Widget text;
+                                                text = Text(
+                                                  formatMonth(
+                                                      monthlyExp[value.toInt()]
+                                                          [0]),
+                                                  style: style,
+                                                );
+
+                                                return SideTitleWidget(
+                                                  axisSide: meta.axisSide,
+                                                  child: text,
+                                                );
+                                              },
+                                            ),
+                                          )),
+                                      barGroups: monthBar.barData
+                                          .map(
+                                            (data) => BarChartGroupData(
+                                                x: data.x,
+                                                barRods: [
+                                                  BarChartRodData(
+                                                    toY: data.y,
+                                                    color: Colors.red,
+                                                    width: 15,
+                                                    borderRadius:
+                                                        const BorderRadius.only(
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    3),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    3)),
+                                                  ),
+                                                  BarChartRodData(
+                                                    backDrawRodData:
+                                                        BackgroundBarChartRodData(
+                                                            color:
+                                                                Colors.black),
+                                                    toY: data.z,
+                                                    color: Colors.green,
+                                                    width: 15,
+                                                    borderRadius:
+                                                        const BorderRadius.only(
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    3),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    3)),
+                                                  ),
+                                                ]),
+                                          )
+                                          .toList()),
+                                ),
                               ),
                             ),
                           ),
@@ -383,14 +396,16 @@ class _BarChartPageState extends State<BarChartPage> {
                         const SizedBox(
                           height: 30,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
+                        Container(
+                          alignment: Alignment.centerLeft,
                           child: SizedBox(
                             height: 300,
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Container(
-                                width: annualExp.length * 70,
+                                width: annualExp.length * 70 > 300
+                                    ? annualExp.length * 70
+                                    : 300,
                                 padding: const EdgeInsets.all(20),
                                 child: BarChart(
                                   BarChartData(
@@ -419,7 +434,8 @@ class _BarChartPageState extends State<BarChartPage> {
                                               Widget text;
                                               text = Text(
                                                 formatYear(
-                                                    dailyExp[value.toInt()][0]),
+                                                    annualExp[value.toInt()]
+                                                        [0]),
                                                 style: style,
                                               );
 
@@ -507,7 +523,6 @@ class _BarChartPageState extends State<BarChartPage> {
   }
 
   String formatDate(DateTime date) {
-    print("i am the date -############# $date");
     String formattedDate = DateFormat('MMM d').format(date);
 
     return formattedDate;
@@ -520,7 +535,9 @@ class _BarChartPageState extends State<BarChartPage> {
   }
 
   String formatYear(DateTime date) {
+    print("======annual exp====$annualExp");
     String formattedDate = DateFormat('y').format(date);
+    print("======annual exp====$formattedDate");
     return formattedDate;
   }
 }

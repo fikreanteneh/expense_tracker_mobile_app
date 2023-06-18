@@ -1,5 +1,6 @@
 import 'package:expense_tracker/application/expense_bloc/expense_bloc.dart';
 import 'package:expense_tracker/get_sections_chart.dart';
+import 'package:expense_tracker/utils.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,9 @@ class _PieChartCategoryState extends State<PieChartCategory> {
     }, builder: (context, state) {
       if (state is ExpenseLoaded) {
         expense = state.expenses;
+        print(
+            "====================[[[[[[[[[[]]]]]]]]]]${expense["groupByDay"]}");
+
         return Chartscategory(expense);
       }
 
@@ -56,13 +60,11 @@ class _PieChartCategoryState extends State<PieChartCategory> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      setState(() {
-                        if (currDay < expense["groupByDay"].length - 1) {
-                          setState(() {
-                            currDay++;
-                          });
-                        }
-                      });
+                      if (currDay < expense["groupByDay"].length - 1) {
+                        setState(() {
+                          currDay++;
+                        });
+                      }
                     },
                     icon: const Icon(Icons.chevron_left),
                     iconSize:
@@ -101,28 +103,33 @@ class _PieChartCategoryState extends State<PieChartCategory> {
                   )
                 ],
               ),
-              Row(
-                children: [
-                  SizedBox(
-                    height: 200,
-                    width: 200,
-                    child: PieChart(
-                      PieChartData(
-                        sections: getSections(currDay, "groupByDay", expense),
-                        centerSpaceRadius: 0,
-                        sectionsSpace: 0,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 240,
+                      width: 240,
+                      child: PieChart(
+                        PieChartData(
+                          sections: getSections(currDay, "groupByDay", expense),
+                          centerSpaceRadius: 0,
+                          sectionsSpace: 0,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Container(
-                    height: 200,
-                    width: 200,
-                    color: Colors.blueAccent,
-                  )
-                ],
+                    Container(
+                        height: 200,
+                        width: 130,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: columnWidg(expense["groupByDay"][currDay]),
+                        )),
+                  ],
+                ),
               ),
             ],
           ),
@@ -192,15 +199,33 @@ class _PieChartCategoryState extends State<PieChartCategory> {
                   )
                 ],
               ),
-              SizedBox(
-                height: 200,
-                width: 200,
-                child: PieChart(
-                  PieChartData(
-                    sections: getSections(currMonth, "groupByMonth", expense),
-                    centerSpaceRadius: 0,
-                    sectionsSpace: 0,
-                  ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      height: 240,
+                      width: 240,
+                      child: PieChart(
+                        PieChartData(
+                          sections:
+                              getSections(currMonth, "groupByMonth", expense),
+                          centerSpaceRadius: 0,
+                          sectionsSpace: 0,
+                        ),
+                      ),
+                    ),
+                    Container(
+                        height: 200,
+                        width: 130,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children:
+                              columnWidg(expense["groupByMonth"][currMonth]),
+                        )),
+                  ],
                 ),
               ),
             ],
@@ -270,15 +295,33 @@ class _PieChartCategoryState extends State<PieChartCategory> {
                   )
                 ],
               ),
-              SizedBox(
-                height: 300,
-                width: 300,
-                child: PieChart(
-                  PieChartData(
-                    sections: getSections(currYear, "groupByYear", expense),
-                    centerSpaceRadius: 0,
-                    sectionsSpace: 0,
-                  ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      height: 240,
+                      width: 240,
+                      child: PieChart(
+                        PieChartData(
+                          sections:
+                              getSections(currYear, "groupByYear", expense),
+                          centerSpaceRadius: 0,
+                          sectionsSpace: 0,
+                        ),
+                      ),
+                    ),
+                    Container(
+                        height: 200,
+                        width: 130,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children:
+                              columnWidg(expense["groupByYear"][currYear]),
+                        )),
+                  ],
                 ),
               ),
             ],
@@ -304,5 +347,39 @@ class _PieChartCategoryState extends State<PieChartCategory> {
   String formatYear(DateTime date) {
     String formattedDate = DateFormat('y').format(date);
     return formattedDate;
+  }
+
+  List<Widget> columnWidg(List expenses) {
+    print(expenses);
+    List<String> categ = [];
+    List<Widget> columnWidgets = [];
+    for (var expe in expenses[3]) {
+      if (!categ.contains(expe.category) && expe.type == "expense") {
+        categ.add(expe.category);
+        columnWidgets.add(Row(
+          children: [
+            Container(
+              width: 15,
+              height: 15,
+              color: catagory[expe.category.toLowerCase()],
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              expe.category,
+              style: TextStyle(
+                color: catagory[expe.category.toLowerCase()],
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            )
+          ],
+        ));
+      }
+    }
+    return columnWidgets;
   }
 }

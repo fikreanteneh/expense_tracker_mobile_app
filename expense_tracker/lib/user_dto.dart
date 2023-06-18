@@ -51,4 +51,9 @@ class User {
       return User.empty;
     }
   }
+
+  static Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove("user");
+  }
 }

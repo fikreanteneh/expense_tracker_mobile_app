@@ -46,44 +46,8 @@ class _ChartPageState extends State<ChartPage> {
         body: TabBarView(children: [
           const PieChartCategory(),
           BarChartPage(),
-
-          // TimeFrame(timeFrame: "groupByDay"),
-          // TimeFrame(timeFrame: "groupByMonth"),
-          // TimeFrame(timeFrame: "groupByyear"),
         ]),
       ),
     );
-  }
-}
-
-class TimeFrame extends StatefulWidget {
-  final String timeFrame;
-  const TimeFrame({Key? key, required this.timeFrame}) : super(key: key);
-
-  @override
-  _TimeFrameState createState() => _TimeFrameState();
-}
-
-class _TimeFrameState extends State<TimeFrame> {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ExpenseBloc, ExpenseState>(builder: (context, state) {
-      if (state is ExpenseLoaded) {
-        return ListView.builder(
-          itemCount: state.expenses[widget.timeFrame].length,
-          itemBuilder: (context, index) {
-            return Container(
-              child: ListView.builder(itemBuilder: (context, index2) {
-                return Card();
-              }),
-            );
-          },
-        );
-      } else if (state is ExpenseError) {
-        return Center(child: Text(state.message));
-      } else {
-        return const Center(child: CircularProgressIndicator());
-      }
-    });
   }
 }

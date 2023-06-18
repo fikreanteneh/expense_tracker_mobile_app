@@ -86,10 +86,10 @@ class LoginCubit extends Cubit<LoginState> {
   //   }
   // }
 
-  // Future<void> logout() async {
-  //   await _authRepository.removeCachedUser();
-  //   emit(LoginState.initial());
-  // }
+  Future<void> logout() async {
+    await User.logout();
+    emit(LoginState.initial());
+  }
 
   // Future<bool> changePassowrd(oldPassword, newPassword, token, id) async {
   //   if (state.status == LoginStatus.submitting) return true;

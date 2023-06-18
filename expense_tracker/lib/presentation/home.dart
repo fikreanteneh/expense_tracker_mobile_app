@@ -4,7 +4,6 @@ import 'package:expense_tracker/expense.dto.dart';
 import 'package:expense_tracker/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -38,6 +37,15 @@ class _HomeState extends State<Home> {
           title: const Text(
             "Balance - \$1000",
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                BlocProvider.of<LoginCubit>(context).logout();
+                GoRouter.of(context).go("/");
+              },
+            )
+          ],
           bottom: const TabBar(tabs: [
             Tab(
               text: "Daily",
@@ -192,15 +200,19 @@ class _TimeFrameState extends State<TimeFrame> {
                                           fontWeight: FontWeight.w500),
                                     ),
                                     const Text(" \$"),
-                                    IconButton(
-                                      onPressed: () {
-                                        BlocProvider.of<ExpenseBloc>(context)
-                                            .add(DeleteExpense(
-                                                expense: expenseDetail));
-                                      },
-                                      icon: const Icon(Icons.delete),
-                                      color: Color.fromARGB(255, 75, 12, 7),
-                                    ),
+                                    widget.timeFrame == "groupByDay"
+                                        ? IconButton(
+                                            onPressed: () {
+                                              BlocProvider.of<ExpenseBloc>(
+                                                      context)
+                                                  .add(DeleteExpense(
+                                                      expense: expenseDetail));
+                                            },
+                                            icon: const Icon(Icons.delete),
+                                            color:
+                                                Color.fromARGB(255, 75, 12, 7),
+                                          )
+                                        : Container(),
                                   ],
                                 ),
                               ],

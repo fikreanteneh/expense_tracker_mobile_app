@@ -82,4 +82,3 @@ List<PieChartSectionData> getSections(int index, String cadence, Map expense) {
   }
   return value;
 }
-

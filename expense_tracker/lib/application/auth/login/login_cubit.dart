@@ -91,32 +91,21 @@ class LoginCubit extends Cubit<LoginState> {
     emit(LoginState.initial());
   }
 
-  // Future<bool> changePassowrd(oldPassword, newPassword, token, id) async {
-  //   if (state.status == LoginStatus.submitting) return true;
-  //   emit(state.copyWith(status: LoginStatus.submitting));
-  //   try {
-  //     bool result = await _authRepository.changePassword(
-  //         oldPassword: oldPassword,
-  //         newPassword: newPassword,
-  //         token: token,
-  //         id: id);
-
-  //     if (result) {
-  //       emit(state.copyWith(status: LoginStatus.success));
-  //       return true;
-  //     } else {
-  //       emit(state.copyWith(status: LoginStatus.error));
-  //       return false;
-  //     }
-  //   } catch (error) {
-  //     String errorMessage = 'An error occurred. Please try again.';
-  //     if (error is Exception) {
-  //       errorMessage = error.toString().replaceAll('Exception:', '');
-  //     }
-  //     emit(state.copyWith(status: LoginStatus.error, error: errorMessage));
-  //     return false;
-  //   }
-  // }
+  Future<String> changePassowrd(oldPassword, newPassword, id) async {
+    if (state.status == LoginStatus.submitting) return '';
+    emit(state.copyWith(status: LoginStatus.submitting));
+    try {
+      bool result = await _fetcher.changePassword(
+          oldPassword: oldPassword, newPassword: newPassword, id: id);
+      if (result) {
+        return "OK";
+      } else {
+        return "Incorrect passowrd";
+      }
+    } catch (error) {
+      return error.toString().substring(10, error.toString().length);
+    }
+  }
 
   // Future<void> editProfile(attribute, value, token) async {
   //   if (state.status == LoginStatus.submitting) return;
@@ -133,24 +122,23 @@ class LoginCubit extends Cubit<LoginState> {
   //   } catch (_) {}
   // }
 
-  // Future<bool> deleteProfile(id, token) async {
-  //   if (state.status == LoginStatus.submitting) return true;
-  //   emit(state.copyWith(status: LoginStatus.submitting));
-  //   try {
-  //     bool result = await _authRepository.deleteProfile(id, token);
-  //     if (result) {
-  //       await _authRepository.removeCachedUser();
-  //       emit(state.copyWith(status: LoginStatus.initial));
-  //       return true;
-  //     }
-  //     return false;
-  //   } catch (error) {
-  //     String errorMessage = 'An error occurred. Please try again.';
-  //     if (error is Exception) {
-  //       errorMessage = error.toString().replaceAll('Exception:', '');
-  //     }
-  //     emit(state.copyWith(status: LoginStatus.error, error: errorMessage));
-  //     return false;
-  //   }
-  // }
+  Future<bool> deleteProfile(id) async {
+    if (state.status == LoginStatus.submitting) return true;
+    emit(state.copyWith(status: LoginStatus.submitting));
+    try {
+      bool result = await _fetcher.deleteProfile(id);
+      if (result) {
+        emit(state.copyWith(status: LoginStatus.initial));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      String errorMessage = 'An error occurred. Please try again.';
+      if (error is Exception) {
+        errorMessage = error.toString().replaceAll('Exception:', '');
+      }
+      emit(state.copyWith(status: LoginStatus.error, error: errorMessage));
+      return false;
+    }
+  }
 }

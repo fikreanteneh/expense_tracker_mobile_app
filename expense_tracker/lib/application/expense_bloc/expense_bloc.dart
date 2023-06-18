@@ -22,12 +22,16 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   FutureOr<void> starter(int id) async {
     List<ExpenseDto> expenses = await ExpenseFetcher.getExpense(id);
     List<BudgetDto> budgets = await ExpenseFetcher.getBudget(id);
+    Map balance = await ExpenseFetcher.getBalance(id);
 
     Map dateIndexes = {"groupByDay": {}, "groupByMonth": {}, "groupByYear": {}};
     Map organized = organizer(expenses, dateIndexes);
     Map organizedBudget = organizeBudget(budgets, organized, dateIndexes);
-    // dividing(organized);
-    emit(ExpenseLoaded(expenses: organized, budgets: organizedBudget));
+    dividing(organized["groupByMonth"]);
+    dividing(organized["groupByYear"]);
+
+    emit(ExpenseLoaded(
+        expenses: organized, budgets: organizedBudget, balance: balance));
   }
 
   FutureOr<void> _onLoadExpense(
@@ -168,25 +172,30 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
   void dividing(grouped) {
     for (var group in grouped) {
-      List dtos = grouped[3];
+      List dtos = group[3];
       Map category = {};
 
-      for (var dto in group[3]) {
-        if (category.containsKey(dto.date.category)) {
+      for (var dto in dtos) {
+        if (category.containsKey(dto.category)) {
           category[dto.category][0] += dto.amount;
         } else {
-          category[dto.category] = [dto.amount, dto.type, dto.user_id];
+          category[dto.category] = [
+            dto.amount,
+            dto.type,
+            dto.user_id,
+            dto.date
+          ];
         }
       }
 
       List categories = [];
       for (var key in category.keys) {
         categories.add(ExpenseDto(
-            user_id: categories[key][2],
-            type: categories[key][1],
+            user_id: category[key][2],
+            type: category[key][1],
             category: key,
-            date: dtos[0],
-            amount: categories[key][0]));
+            date: category[key][3],
+            amount: category[key][0]));
       }
       group[3] = categories;
     }

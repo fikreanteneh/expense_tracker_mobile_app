@@ -9,7 +9,6 @@ class Fetcher {
     required String username,
     required String password,
   }) async {
-    print("================ ${username} ${password}");
     try {
       http.Response response = await http.post(
         Uri.parse("$uri/auth/signup"),
@@ -91,33 +90,32 @@ class Fetcher {
 //     }
 //   }
 
-//   Future<bool> changePassword({
-//     required String oldPassword,
-//     required String newPassword,
-//     required String token,
-//     required int id,
-//   }) async {
-//     try {
-//       http.Response res = await http.put(
-//         Uri.parse('$uri/profile/update/changepassword/$id'),
-//         body: jsonEncode({
-//           'oldPassword': oldPassword,
-//           'newPassword': newPassword,
-//         }),
-//         headers: <String, String>{
-//           'Content-Type': 'application/json; charset=UTF-8',
-//           'auth-token': token,
-//         },
-//       );
-//       if (res.statusCode == 200) {
-//         return true;
-//       } else {
-//         return false;
-//       }
-//     } catch (err) {
-//       rethrow;
-//     }
-//   }
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required int id,
+  }) async {
+    try {
+      http.Response res = await http.put(
+        Uri.parse('$uri/auth/changepassword/$id'),
+        body: jsonEncode({
+          'oldPassword': oldPassword,
+          'newPassword': newPassword,
+        }),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (res.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      rethrow;
+    }
+  }
 
 //   // phone number validation
 //   Future<bool> phoneValidate({
@@ -167,23 +165,21 @@ class Fetcher {
 //     }
 //   }
 
-//   Future<bool> deleteProfile(id, token) async {
-//     try {
-//       http.Response response = await http.delete(
-//         Uri.parse('$uri/profile/delete/$id'),
-//         headers: <String, String>{
-//           'Content-Type': 'application/json; charset=UTF-8',
-//           'auth-token': token
-//         },
-//       );
-//       print('----------------${response.statusCode}');
-//       if (response.statusCode == 204) {
-//         return true;
-//       } else {
-//         throw Exception(jsonDecode(response.body)['error']);
-//       }
-//     } catch (err) {
-//       rethrow;
-//     }
-//   }
+  Future<bool> deleteProfile(id) async {
+    try {
+      http.Response response = await http.delete(
+        Uri.parse('$uri/auth/deleteaccount/$id'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 204) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      rethrow;
+    }
+  }
 }

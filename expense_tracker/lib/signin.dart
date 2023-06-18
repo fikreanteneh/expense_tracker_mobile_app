@@ -61,19 +61,6 @@ class _LoginFormState extends State<LoginForm> {
               const SizedBox(height: 15),
               PasswordInput(controller: _passwordController),
               const SizedBox(height: 5),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: () {
-                    GoRouter.of(context).push("/forgetpassword");
-                  },
-                  child: const Text(
-                    "Forgot your password?",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(color: Color.fromARGB(255, 0, 33, 140)),
-                  ),
-                ),
-              ),
               const SizedBox(
                 height: 20,
               ),

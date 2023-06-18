@@ -20,50 +20,65 @@ class _HomeState extends State<Home> {
     final expenseBloc = BlocProvider.of<ExpenseBloc>(context);
     final authBloc = BlocProvider.of<LoginCubit>(context);
     expenseBloc.add(LoadExpense(id: authBloc.state.user.id));
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              GoRouter.of(context).push("/home/addExpense");
-            },
-            child: const Icon(Icons.add)),
-        appBar: AppBar(
-          title: const Text(
-            "Balance - \$1000",
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
-                BlocProvider.of<LoginCubit>(context).logout();
-                GoRouter.of(context).go("/");
-              },
-            )
-          ],
-          bottom: const TabBar(tabs: [
-            Tab(
-              text: "Daily",
+    return BlocBuilder<ExpenseBloc, ExpenseState>(
+      builder: (context, state) {
+        if (state is ExpenseInitial) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state is ExpenseError) {
+          return const Center(
+            child: Text("Error While Fetching"),
+          );
+        } else if (state is ExpenseLoaded) {
+          double balance = state.balance["balance"];
+          return DefaultTabController(
+            length: 3,
+            child: Scaffold(
+              floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    GoRouter.of(context).push("/home/addExpense");
+                  },
+                  child: const Icon(Icons.add)),
+              appBar: AppBar(
+                title: Text("Balance - $balance"),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    onPressed: () {
+                      BlocProvider.of<LoginCubit>(context).logout();
+                      GoRouter.of(context).go("/");
+                    },
+                  )
+                ],
+                bottom: const TabBar(tabs: [
+                  Tab(
+                    text: "Daily",
+                  ),
+                  Tab(
+                    text: "Monthly",
+                  ),
+                  Tab(
+                    text: "Yearly",
+                  )
+                ]),
+              ),
+              body: const TabBarView(children: [
+                TimeFrame(timeFrame: "groupByDay"),
+                TimeFrame(timeFrame: "groupByMonth"),
+                TimeFrame(timeFrame: "groupByYear"),
+              ]),
             ),
-            Tab(
-              text: "Monthly",
-            ),
-            Tab(
-              text: "Yearly",
-            )
-          ]),
-        ),
-        body: const TabBarView(children: [
-          TimeFrame(timeFrame: "groupByDay"),
-          TimeFrame(timeFrame: "groupByMonth"),
-          TimeFrame(timeFrame: "groupByYear"),
-        ]),
-      ),
+          );
+        }
+        return Column();
+      },
     );
   }
 }

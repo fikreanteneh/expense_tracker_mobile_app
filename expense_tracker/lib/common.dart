@@ -323,8 +323,7 @@ class SignupButton extends StatelessWidget {
                     showSnackBar(context, "Password is required");
                   } else if (password.text.length >= 6) {
                     context.read<SignupCubit>().signupFormSubmitted();
-                    showSnackBar(context,
-                        "Account created succesfully. Login with the same phone number and password.");
+                    showSnackBar(context, "Account created succesfully.");
                   }
                 },
                 child: const Text(

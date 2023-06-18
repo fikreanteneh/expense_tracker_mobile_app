@@ -41,7 +41,6 @@ const signUp = async (req, response) => {
   }
 };
 
-
 const signIn = async (req, res) => {
   console.log(req.body);
   try {
@@ -64,7 +63,7 @@ const signIn = async (req, res) => {
 
       const payload = { id: result[0].id, role: result[0].role };
       const token = jwt.sign(payload, "secret-token-key");
-      const response = { id: result[0].id, username: username, token: token };
+      const response = {id:result[0].id, username: username, token: token };
       return res.status(200).json(response);
     });
   } catch (e) {
@@ -72,80 +71,81 @@ const signIn = async (req, res) => {
   }
 };
 
-const changePassword = async (req, res) => {
-  try {
-    const profileId = req.params.id;
-    const { oldPassword, newPassword } = req.body;
-
-    if (!oldPassword || !newPassword || !profileId) {
-      return res
-        .status(400)
-        .json({ error: "Missing required fields to change password" });
-    }
-
-    const query1 = "SELECT password FROM account WHERE id = ?";
-    connection.query(query1, [profileId], async (error, result, fields) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Error changing password" });
-      }
-      //   const oldGivenHash = await bcryptjs.hash(oldPassword, 8);
-
-      const isMatch = await bcryptjs.compare(oldPassword, result[0].password);
-
-      if (!isMatch) {
-        res.status(400).json({ error: "Incorrect password" });
-
-        return;
-      }
-
-      const query = ` UPDATE account SET password = ? WHERE id = ?`;
-
-      const newPassHash = await bcryptjs.hash(newPassword, 8);
-      connection.query(
-        query,
-        [newPassHash, profileId],
-        (error, results, fields) => {
-          if (error) {
-            console.error(error);
-            res.status(500).json({ error: "Error Changing password" });
-            return;
-          } else {
-            res.status(200).json({ msg: "password updated successfully" });
-            return;
-          }
-        }
-      );
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Error Changing password" });
-  }
+const deleteAccount = (req, res) => { 
+  try { 
+    const profileId = req.params.id; 
+    console.log("-------body", profileId); 
+    if (!profileId) { 
+      return res.status(400).json({ error: "Missing required fields" }); 
+    } 
+ 
+    const query = "Delete from account WHERE id = ?"; 
+    connection.query(query, [profileId], (error, results, fields) => { 
+      if (error) { 
+        return res.status(500).json("Error deleting account"); 
+      } 
+ 
+      res.status(204).json({ msg: "Account Deleted successfully" }); 
+    }); 
+  } catch (error) { 
+    res.status(500).json({ error: "Error canceling appointment" }); 
+  } 
 };
 
-const deleteAccount = (req, res) => {
-  try {
-    const profileId = req.params.id;
-    console.log("-------body", profileId);
-    if (!profileId) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
 
-    const query = "Delete from account WHERE id = ?";
-    connection.query(query, [profileId], (error, results, fields) => {
-      if (error) {
-        return res.status(500).json("Error deleting account");
-      }
-
-      res.status(204).json({ msg: "Account Deleted successfully" });
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Error canceling appointment" });
-  }
+const changePassword = async (req, res) => { 
+  try { 
+    const profileId = req.params.id; 
+    const { oldPassword, newPassword } = req.body; 
+ 
+    if (!oldPassword || !newPassword || !profileId) { 
+      return res 
+        .status(400) 
+        .json({ error: "Missing required fields to change password" }); 
+    } 
+ 
+    const query1 = "SELECT password FROM account WHERE id = ?"; 
+    connection.query(query1, [profileId], async (error, result, fields) => { 
+      if (error) { 
+        console.error(error); 
+        return res.status(500).json({ error: "Error changing password" }); 
+      } 
+      //   const oldGivenHash = await bcryptjs.hash(oldPassword, 8); 
+ 
+      const isMatch = await bcryptjs.compare(oldPassword, result[0].password); 
+ console.log(isMatch);
+      if (!isMatch) { 
+        res.status(400).json({ error: "Incorrect password" }); 
+ 
+        return; 
+      } 
+ 
+      const query =  `UPDATE account SET password = ? WHERE id = ?`; 
+ 
+      const newPassHash = await bcryptjs.hash(newPassword, 8); 
+      connection.query( 
+        query, 
+        [newPassHash, profileId], 
+        (error, results, fields) => { 
+          if (error) { 
+            console.error(error); 
+            res.status(500).json({ error: "Error Changing password" }); 
+            return; 
+          } else { 
+            res.status(200).json({ msg: "password updated successfully" }); 
+            return; 
+          } 
+        } 
+      ); 
+    }); 
+  } catch (error) { 
+    res.status(500).json({ error: "Error Changing password" }); 
+  } 
 };
 
 module.exports = {
   signIn,
   signUp,
-  changePassword,
   deleteAccount,
+  changePassword,
 };

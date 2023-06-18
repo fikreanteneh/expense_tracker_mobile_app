@@ -7,6 +7,23 @@ import 'package:expense_tracker/utils.dart';
 import 'package:http/http.dart' as http;
 
 class ExpenseFetcher {
+  static Future<Map> getBalance(int id) async {
+    final result = await http.get(Uri.parse('$uri/expense/balance/$id'),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'});
+    if (result.statusCode == 200) {
+      var json = jsonDecode(result.body);
+      print("========${json["expense"].runtimeType}");
+      return {
+        "expense": double.parse(json["expense"].toString()),
+        "income": double.parse(json["income"].toString()),
+        "balance": double.parse(json["income"].toString()) - double.parse(json["expense"].toString())
+      };
+    } else {
+      print("===========reeeee");
+      throw Exception('Failed to load expense');
+    }
+  }
+
   static Future<List<ExpenseDto>> getExpense(int id) async {
     final result = await http.get(Uri.parse('$uri/expense/$id'),
         headers: {'Content-Type': 'application/json; charset=UTF-8'});

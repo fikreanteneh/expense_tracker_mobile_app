@@ -25,11 +25,6 @@ class _ChartPageState extends State<ChartPage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              GoRouter.of(context).pushNamed("/addExpense");
-            },
-            child: const Icon(Icons.add)),
         appBar: AppBar(
           title: const Text(
             "Expense Tracker",

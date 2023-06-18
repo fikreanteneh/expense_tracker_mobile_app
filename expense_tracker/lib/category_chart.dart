@@ -27,13 +27,19 @@ class _PieChartCategoryState extends State<PieChartCategory> {
     }, builder: (context, state) {
       if (state is ExpenseLoaded) {
         expense = state.expenses;
-        print(
-            "====================[[[[[[[[[[]]]]]]]]]]${expense["groupByDay"]}");
 
         return Chartscategory(expense);
+      } else if (state is ExpenseInitial) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      } else {
+        return const Center(
+          child: Text("Error While graphing"),
+        );
       }
 
-      return Chartscategory(expense);
+      ;
     });
   }
 
@@ -41,291 +47,306 @@ class _PieChartCategoryState extends State<PieChartCategory> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Column(
-            children: [
-              const Text(
-                "Daily Expenses",
-                style: TextStyle(
-                  color: Colors.deepPurple,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      if (currDay < expense["groupByDay"].length - 1) {
-                        setState(() {
-                          currDay++;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.chevron_left),
-                    iconSize:
-                        currDay < expense["groupByDay"].length - 1 ? 30 : 24,
-                    color: currDay < expense["groupByDay"].length - 1
-                        ? Colors.purple
-                        : Colors.purple[200],
-                  ),
-                  const SizedBox(
-                    width: 50,
-                  ),
-                  Text(
-                    formatDate(expense["groupByDay"][currDay][0]),
-                    style: const TextStyle(
-                      color: Colors.purple,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 24,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 50,
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      if (currDay > 0) {
-                        setState(() {
-                          currDay--;
-                        });
-                      }
-                    },
-                    icon: Icon(
-                      Icons.chevron_right,
-                      color: currDay > 0 ? Colors.purple : Colors.purple[200],
-                    ),
-                    iconSize: currDay > 0 ? 30 : 24,
-                  )
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+          expense["groupByDay"].isEmpty
+              ? Container()
+              : Column(
                   children: [
-                    SizedBox(
-                      height: 240,
-                      width: 240,
-                      child: PieChart(
-                        PieChartData(
-                          sections: getSections(currDay, "groupByDay", expense),
-                          centerSpaceRadius: 0,
-                          sectionsSpace: 0,
-                        ),
+                    const Text(
+                      "Daily Expenses",
+                      style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                    Container(
-                        height: 200,
-                        width: 130,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: columnWidg(expense["groupByDay"][currDay]),
-                        )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            if (currDay < expense["groupByDay"].length - 1) {
+                              setState(() {
+                                currDay++;
+                              });
+                            }
+                          },
+                          icon: const Icon(Icons.chevron_left),
+                          iconSize: currDay < expense["groupByDay"].length - 1
+                              ? 30
+                              : 24,
+                          color: currDay < expense["groupByDay"].length - 1
+                              ? Colors.purple
+                              : Colors.purple[200],
+                        ),
+                        const SizedBox(
+                          width: 50,
+                        ),
+                        Text(
+                          formatDate(expense["groupByDay"][currDay]?[0]),
+                          style: const TextStyle(
+                            color: Colors.purple,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 24,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 50,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            if (currDay > 0) {
+                              setState(() {
+                                currDay--;
+                              });
+                            }
+                          },
+                          icon: Icon(
+                            Icons.chevron_right,
+                            color: currDay > 0
+                                ? Colors.purple
+                                : Colors.purple[200],
+                          ),
+                          iconSize: currDay > 0 ? 30 : 24,
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 240,
+                            width: 240,
+                            child: PieChart(
+                              PieChartData(
+                                sections:
+                                    getSections(currDay, "groupByDay", expense),
+                                centerSpaceRadius: 0,
+                                sectionsSpace: 0,
+                              ),
+                            ),
+                          ),
+                          Container(
+                              height: 200,
+                              width: 130,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children:
+                                    columnWidg(expense["groupByDay"][currDay]),
+                              )),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
           const SizedBox(
             height: 40,
           ),
-          Column(
-            children: [
-              const Text(
-                "Monthly Expenses",
-                style: TextStyle(
-                  color: Colors.deepPurple,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        if (currMonth < expense["groupByMonth"].length - 1) {
-                          setState(() {
-                            currMonth++;
-                          });
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.chevron_left),
-                    iconSize: currMonth < expense["groupByMonth"].length - 1
-                        ? 30
-                        : 24,
-                    color: currMonth < expense["groupByMonth"].length - 1
-                        ? Colors.purple
-                        : Colors.purple[200],
-                  ),
-                  const SizedBox(
-                    width: 50,
-                  ),
-                  Text(
-                    formatMonth(expense["groupByMonth"][currMonth][0]),
-                    style: const TextStyle(
-                      color: Colors.purple,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 50,
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      if (currMonth > 0) {
-                        setState(() {
-                          currMonth--;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.chevron_right),
-                    color: currMonth > 0 ? Colors.purple : Colors.purple[200],
-                    iconSize: currMonth > 0 ? 30 : 24,
-                  )
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          expense["groupByMonth"].isEmpty
+              ? Container()
+              : Column(
                   children: [
-                    SizedBox(
-                      height: 240,
-                      width: 240,
-                      child: PieChart(
-                        PieChartData(
-                          sections:
-                              getSections(currMonth, "groupByMonth", expense),
-                          centerSpaceRadius: 0,
-                          sectionsSpace: 0,
-                        ),
+                    const Text(
+                      "Monthly Expenses",
+                      style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                    Container(
-                        height: 200,
-                        width: 130,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children:
-                              columnWidg(expense["groupByMonth"][currMonth]),
-                        )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            if (currMonth <
+                                expense["groupByMonth"].length - 1) {
+                              setState(() {
+                                currMonth++;
+                              });
+                            }
+                            ;
+                          },
+                          icon: const Icon(Icons.chevron_left),
+                          iconSize:
+                              currMonth < expense["groupByMonth"].length - 1
+                                  ? 30
+                                  : 24,
+                          color: currMonth < expense["groupByMonth"].length - 1
+                              ? Colors.purple
+                              : Colors.purple[200],
+                        ),
+                        const SizedBox(
+                          width: 50,
+                        ),
+                        Text(
+                          formatMonth(expense["groupByMonth"][currMonth][0]),
+                          style: const TextStyle(
+                            color: Colors.purple,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 50,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            if (currMonth > 0) {
+                              setState(() {
+                                currMonth--;
+                              });
+                            }
+                          },
+                          icon: const Icon(Icons.chevron_right),
+                          color: currMonth > 0
+                              ? Colors.purple
+                              : Colors.purple[200],
+                          iconSize: currMonth > 0 ? 30 : 24,
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            height: 240,
+                            width: 240,
+                            child: PieChart(
+                              PieChartData(
+                                sections: getSections(
+                                    currMonth, "groupByMonth", expense),
+                                centerSpaceRadius: 0,
+                                sectionsSpace: 0,
+                              ),
+                            ),
+                          ),
+                          Container(
+                              height: 200,
+                              width: 130,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: columnWidg(
+                                    expense["groupByMonth"][currMonth]),
+                              )),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
           const SizedBox(
             height: 40,
           ),
-          Column(
-            children: [
-              const Text(
-                "Annual Expenses",
-                style: TextStyle(
-                  color: Colors.deepPurple,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        if (currYear < expense["groupByYear"].length - 1) {
-                          setState(() {
-                            currYear++;
-                          });
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.chevron_left),
-                    color: currYear < expense["groupByYear"].length - 1
-                        ? Colors.purple
-                        : Colors.purple[200],
-                    iconSize:
-                        currYear < expense["groupByYear"].length - 1 ? 30 : 24,
-                  ),
-                  const SizedBox(
-                    width: 50,
-                  ),
-                  Text(
-                    formatYear(expense["groupByYear"][currYear][0]),
-                    style: const TextStyle(
-                      color: Colors.purple,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 50,
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      if (currYear > 0) {
-                        setState(() {
-                          currYear--;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.chevron_right),
-                    color: currYear > 0 ? Colors.purple : Colors.purple[200],
-                    iconSize: currYear > 0 ? 30 : 24,
-                  )
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          expense["groupByYear"].isEmpty
+              ? Container()
+              : Column(
                   children: [
-                    SizedBox(
-                      height: 240,
-                      width: 240,
-                      child: PieChart(
-                        PieChartData(
-                          sections:
-                              getSections(currYear, "groupByYear", expense),
-                          centerSpaceRadius: 0,
-                          sectionsSpace: 0,
-                        ),
+                    const Text(
+                      "Annual Expenses",
+                      style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                    Container(
-                        height: 200,
-                        width: 130,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children:
-                              columnWidg(expense["groupByYear"][currYear]),
-                        )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            if (currYear < expense["groupByYear"].length - 1) {
+                              setState(() {
+                                currYear++;
+                              });
+                            }
+                            ;
+                          },
+                          icon: const Icon(Icons.chevron_left),
+                          color: currYear < expense["groupByYear"].length - 1
+                              ? Colors.purple
+                              : Colors.purple[200],
+                          iconSize: currYear < expense["groupByYear"].length - 1
+                              ? 30
+                              : 24,
+                        ),
+                        const SizedBox(
+                          width: 50,
+                        ),
+                        Text(
+                          formatYear(expense["groupByYear"][currYear][0]),
+                          style: const TextStyle(
+                            color: Colors.purple,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 50,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            if (currYear > 0) {
+                              setState(() {
+                                currYear--;
+                              });
+                            }
+                          },
+                          icon: const Icon(Icons.chevron_right),
+                          color:
+                              currYear > 0 ? Colors.purple : Colors.purple[200],
+                          iconSize: currYear > 0 ? 30 : 24,
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            height: 240,
+                            width: 240,
+                            child: PieChart(
+                              PieChartData(
+                                sections: getSections(
+                                    currYear, "groupByYear", expense),
+                                centerSpaceRadius: 0,
+                                sectionsSpace: 0,
+                              ),
+                            ),
+                          ),
+                          Container(
+                              height: 200,
+                              width: 130,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: columnWidg(
+                                    expense["groupByYear"][currYear]),
+                              )),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
         ],
       ),
     );

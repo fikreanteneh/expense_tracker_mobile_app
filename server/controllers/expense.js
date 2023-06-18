@@ -18,6 +18,23 @@ const getExpenseData = async (req, response) => {
       return response.status(500).json({ error: error.message });
     }
   };
+
+  const getBalance = async (req, response) => {
+    console.log(req.body);
+    try {
+
+        const id = req.params.id;
+        const query = `SELECT * FROM balance WHERE user_id = ${id}`;
+      connection.query(query, (err, result) => {
+        if (err) {
+          return response.status(500).json({ error: "Internal server error" });
+        }
+        return response.status(200).json(result[0]);
+      });
+    } catch (error) {
+      return response.status(500).json({ error: error.message });
+    }
+  };
   
 
 
@@ -33,6 +50,13 @@ const createExpense = async (req, res) => {
             if (err) {
                 return response.status(500).json({ error: "Internal server error" });
               }
+        const query3 = `UPDATE  balance SET ${type} = ${type} + ${amount} where user_id = ${user_id}`;
+        connection.query(query3,(err, result) => {
+              if (err){
+              return response.status(500).json({ error: "Internal server error" });
+              }
+        })
+            
             return res.status(200).json({ message: "Expense created successfully" });
     })
 
@@ -78,4 +102,4 @@ const deleteExpense = async (req, res) => {
 };
 
 
-module.exports = {createExpense, getExpenseData, updateExpense, deleteExpense};
+module.exports = {createExpense, getExpenseData, updateExpense, deleteExpense, getBalance};
